@@ -14,7 +14,7 @@ venv/
 # Alembic cache & migration pyc files
 alembic/__pycache__/
 alembic/*.log
-
+alembic.ini
 # SQLite (if used for local testing)
 *.db
 *.sqlite3
