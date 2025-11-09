@@ -1,0 +1,21 @@
+# Normalize all text files automatically
+* text=auto
+
+# Enforce LF for code/config
+*.py text eol=lf
+*.ini text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.mako text eol=lf
+
+# Keep Windows batch files with CRLF
+*.bat text eol=crlf
+
+# Ignore binary files from line-ending conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.exe binary
