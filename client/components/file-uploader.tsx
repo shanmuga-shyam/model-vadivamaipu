@@ -28,7 +28,7 @@ export function FileUploader({ onFileSelect }: FileUploaderProps) {
     e.preventDefault()
     setIsDragging(false)
 
-    const files = e.dataTransfer.files
+    const {files} = e.dataTransfer
     if (files.length > 0) {
       const file = files[0]
       if (file.type === "text/csv" || file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
@@ -39,7 +39,7 @@ export function FileUploader({ onFileSelect }: FileUploaderProps) {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.currentTarget.files
+    const {files} = e.currentTarget
     if (files?.length) {
       const file = files[0]
       setSelectedFile(file)

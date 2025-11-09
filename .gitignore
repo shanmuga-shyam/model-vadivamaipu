@@ -1,92 +1,75 @@
-# -------------------------------
-# Node / Next.js
-# -------------------------------
+# ===============================
+# Python / FastAPI / Alembic
+# ===============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+.env.local
+.env.*.local
+
+# Alembic cache & migration pyc files
+alembic/__pycache__/
+alembic/*.log
+
+# SQLite (if used for local testing)
+*.db
+*.sqlite3
+
+# ===============================
+# Node / React (Frontend)
+# ===============================
+# dependencies
 node_modules/
+
+# production
 .next/
 out/
-dist/
-build/
-# Logs
+
+# testing
+coverage/
+*.lcov
+
+# local env files
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# misc
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-# Env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-# Misc
-.DS_Store
-*.pem
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-# -------------------------------
-# Python / FastAPI
-# -------------------------------
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.pkl
-*.sqlite3
-*.db
-*.log
-*.pot
-*.pyproj
-*.idea/
-*.vscode/
-*.mypy_cache/
-*.pytest_cache/
-*.coverage
-htmlcov/
-*.mo
-*.egg-info/
-*.eggs/
-.venv/
-venv/
-ENV/
-env/
-*.spec
-# Compiled Cython files
-*.c
-*.cpp
-
-# -------------------------------
-# Environment / Secrets
-# -------------------------------
-.env
-.env.*
-!.env.example  # Keep an example env file for documentation
-
-# -------------------------------
-# Docker
-# -------------------------------
-# Ignore build artifacts and temp files
-**/Dockerfile~
-**/docker-compose.override.yml
-**/docker-compose.yml~
-**/docker-data/
-**/docker-cache/
-**/tmp/
-**/logs/
-
-# -------------------------------
-# OS / Editor
-# -------------------------------
+# ===============================
+# System / IDE Files
+# ===============================
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
 *.swp
 *.swo
 *.bak
-*.tmp
-.idea/
-.vscode/
-*.code-workspace
 
-# -------------------------------
-# Uploads / Media
-# -------------------------------
+# ===============================
+# Uploads / Temp Data
+# ===============================
 server/uploads/
-uploads/
-media/
-staticfiles/
+*.csv
+*.xlsx
+*.xls
+
+# ===============================
+# Docker / Logs
+# ===============================
+*.log
+docker-compose.override.yml

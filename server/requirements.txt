@@ -11,3 +11,6 @@ langchain
 openai
 passlib[bcrypt]
 python-dotenv
+python-jose[cryptography]
+alembic 
+pydantic[email]
