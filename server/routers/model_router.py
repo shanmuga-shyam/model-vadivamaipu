@@ -5,6 +5,7 @@ from datetime import datetime
 from core.database import get_db
 from ml_engine.model_runner import run_models_parallel
 from models.data_models import Dataset, ModelResult
+from models.user_model import User
 from routers.auth_router import get_current_user
 
 router = APIRouter()
@@ -15,7 +16,7 @@ async def evaluate_models(
     file: UploadFile,
     target_col: str = Form(...),
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Upload → Evaluate → Store results."""
     os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -26,7 +27,7 @@ async def evaluate_models(
 
     # Save dataset in DB
     dataset = Dataset(
-        user_id=current_user["id"],
+        user_id=current_user.id,
         filename=file.filename,
         file_path=file_path
     )
@@ -40,11 +41,11 @@ async def evaluate_models(
     # Save each model's result to DB
     for r in result["results"]:
         db_result = ModelResult(
-            user_id=current_user["id"],
+            user_id=current_user.id,
             dataset_id=dataset.id,
             model_name=r["model"],
-            r2_score=r["r2_score"] or 0.0,
-            mse=r["mse"] or 0.0,
+            r2_score=r.get("r2_test") or r.get("r2_train") or 0.0,
+            mse=r.get("mse") or 0.0,
             created_at=datetime.utcnow()
         )
         db.add(db_result)

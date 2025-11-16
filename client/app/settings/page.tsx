@@ -1,17 +1,30 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useTheme } from "next-themes"
+import { useAuth } from "@/components/auth-context"
 import { User, Moon, Sun, Monitor, Bell, Shield } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
+  const auth = (() => {
+    try {
+      return useAuth()
+    } catch (e) {
+      return null
+    }
+  })()
   const [activeTab, setActiveTab] = useState("profile")
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [formData, setFormData] = useState({
+    name: auth?.user?.email?.split("@")[0] || "User",
+    email: auth?.user?.email || "user@example.com",
+    bio: "ML enthusiast and data scientist",
+  })
 
   const tabs = [
     { id: "profile", label: "Profile", icon: User },
@@ -73,18 +86,30 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-sm font-medium mb-2">Full Name</label>
-              <Input type="text" defaultValue="John Doe" className="bg-background/50 border-border/50" />
+              <Input
+                type="text"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="bg-background/50 border-border/50"
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">Email Address</label>
-              <Input type="email" defaultValue="john@example.com" className="bg-background/50 border-border/50" />
+              <Input
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-background/50 border-border/50"
+                disabled
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">Bio</label>
               <textarea
-                defaultValue="ML enthusiast and data scientist"
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 className="w-full px-3 py-2 rounded-lg bg-background/50 border border-border/50 focus:outline-none focus:border-primary resize-none"
                 rows={3}
               />

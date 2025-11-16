@@ -2,14 +2,23 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Brain, LayoutDashboard, History, Settings, LogOut, ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/components/auth-context"
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+  const auth = (() => {
+    try {
+      return useAuth()
+    } catch (e) {
+      return null
+    }
+  })()
 
   const menuItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -19,6 +28,13 @@ export function Sidebar() {
   ]
 
   const isActive = (href: string) => pathname === href
+
+  const handleLogout = async () => {
+    if (auth) {
+      await auth.logout()
+      router.push("/auth")
+    }
+  }
 
   return (
     <aside
@@ -76,7 +92,7 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border space-y-2">
-        <Button variant="ghost" size="sm" className="w-full gap-2 justify-start">
+        <Button variant="ghost" size="sm" className="w-full gap-2 justify-start" onClick={handleLogout}>
           <LogOut className="w-4 h-4" />
           {!collapsed && "Logout"}
         </Button>

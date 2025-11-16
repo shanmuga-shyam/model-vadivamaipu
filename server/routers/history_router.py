@@ -3,16 +3,17 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from routers.auth_router import get_current_user
 from models.data_models import Dataset, ModelResult
+from models.user_model import User
 
 router = APIRouter()
 
 @router.get("/history")
 def get_user_history(
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """Fetch all datasets & model results for logged-in user."""
-    datasets = db.query(Dataset).filter_by(user_id=current_user["id"]).all()
+    datasets = db.query(Dataset).filter_by(user_id=current_user.id).all()
     history = []
 
     for ds in datasets:

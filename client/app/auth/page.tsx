@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Brain, Mail, Lock, User, ArrowLeft } from "lucide-react"
+import { useAuth } from "@/components/auth-context"
 
 type AuthMode = "login" | "signup"
 
@@ -17,6 +18,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
+  const auth = useAuth()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -24,21 +26,20 @@ export default function AuthPage() {
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    const email = formData.get("email")
-    const password = formData.get("password")
-    const name = formData.get("name")
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
 
     try {
-      // Placeholder for actual auth logic
-      console.log("Auth attempt:", { mode, email, password, name })
-
-      // Simulate successful auth
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      if (mode === "login") {
+        await auth.login(email, password)
+      } else {
+        await auth.signup(email, password)
+      }
 
       // Redirect to dashboard
       router.push("/dashboard")
-    } catch (err) {
-      setError("Authentication failed. Please try again.")
+    } catch (err: any) {
+      setError(err?.message || "Authentication failed. Please try again.")
     } finally {
       setLoading(false)
     }
@@ -91,25 +92,6 @@ export default function AuthPage() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {mode === "signup" && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
-                  Full Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="John Doe"
-                    required={mode === "signup"}
-                    className="pl-10 bg-background/50 border-border/50"
-                  />
-                </div>
-              </div>
-            )}
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium mb-2">
                 Email Address

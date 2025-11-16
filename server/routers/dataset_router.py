@@ -4,6 +4,7 @@ import os, shutil
 from datetime import datetime
 from core.database import get_db
 from models.data_models import Dataset
+from models.user_model import User
 from routers.auth_router import get_current_user
 
 router = APIRouter()
@@ -13,7 +14,7 @@ UPLOAD_DIR = "server/uploads"
 async def upload_dataset(
     file: UploadFile,
     db: Session = Depends(get_db),
-    current_user: dict = Depends(get_current_user)
+    current_user: User = Depends(get_current_user)
 ):
     """
     Uploads a dataset file, stores it in /uploads, 
@@ -26,7 +27,7 @@ async def upload_dataset(
         shutil.copyfileobj(file.file, buffer)
 
     dataset = Dataset(
-        user_id=current_user["id"],
+        user_id=current_user.id,
         filename=file.filename,
         file_path=file_path,
         uploaded_at=datetime.utcnow()
