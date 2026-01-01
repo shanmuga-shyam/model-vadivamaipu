@@ -24,7 +24,7 @@ export function Sidebar() {
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/dashboard/results", icon: History, label: "Results" },
     { href: "/dashboard/history", icon: History, label: "History" },
-    { href: "/settings", icon: Settings, label: "Settings" },
+    { href: "/dashboard/settings", icon: Settings, label: "Settings" },
   ]
 
   const isActive = (href: string) => pathname === href

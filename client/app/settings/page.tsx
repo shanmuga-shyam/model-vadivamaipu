@@ -1,15 +1,17 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useTheme } from "next-themes"
 import { useAuth } from "@/components/auth-context"
-import { User, Moon, Sun, Monitor, Bell, Shield } from "lucide-react"
+import { User, Moon, Sun, Monitor, Bell, Shield, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export default function SettingsPage() {
+  const router = useRouter()
   const { theme, setTheme } = useTheme()
   const auth = (() => {
     try {
@@ -36,9 +38,19 @@ export default function SettingsPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-foreground/60">Manage your account and preferences</p>
+      <div className="flex items-center gap-4">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.back()}
+          className="hover:bg-primary/10"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Button>
+        <div>
+          <h1 className="text-3xl font-bold">Settings</h1>
+          <p className="text-foreground/60">Manage your account and preferences</p>
+        </div>
       </div>
 
       {/* Tabs */}
