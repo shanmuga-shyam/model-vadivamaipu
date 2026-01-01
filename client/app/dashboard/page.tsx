@@ -123,7 +123,7 @@ export default function Dashboard() {
     <div className="space-y-8">
       {/* Welcome Section */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold">Welcome back!</h1>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-500 via-cyan-400 to-purple-500 bg-clip-text text-transparent">Welcome back!</h1>
         <p className="text-foreground/60">Upload your dataset and get started with ML model evaluation</p>
       </div>
 
@@ -132,7 +132,7 @@ export default function Dashboard() {
           {/* Quick Start Cards */}
           <div className="grid md:grid-cols-3 gap-6">
             {/* Upload Dataset Card */}
-            <Card className="border-border/40 bg-card/50 backdrop-blur-sm hover:border-primary/60 transition p-6 cursor-pointer">
+            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-primary hover:shadow-orange-500/40 transition-all duration-300 p-6 cursor-pointer group">
               <input
                 ref={fileInputRef}
                 type="file"
@@ -144,35 +144,35 @@ export default function Dashboard() {
                 onClick={() => fileInputRef.current?.click()}
                 className="flex flex-col h-full"
               >
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Upload className="w-6 h-6 text-primary" />
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-orange-500/50 transition-all">
+                  <Upload className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="font-semibold mb-2">Upload Dataset</h3>
                 <p className="text-sm text-foreground/60 flex-1">Start by uploading your CSV or XLSX file</p>
-                {file && <p className="text-xs text-primary mt-2 font-medium">{file.name}</p>}
+                {file && <p className="text-xs text-orange-500 mt-2 font-medium">✓ {file.name}</p>}
               </div>
             </Card>
 
             {/* Describe Your Goal Card */}
-            <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <MessageSquare className="w-6 h-6 text-primary" />
+            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-accent hover:shadow-cyan-400/40 transition-all duration-300 p-6 group">
+              <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-cyan-400/50 transition-all">
+                <MessageSquare className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold mb-2">Describe Your Goal</h3>
-              <p className="text-sm text-foreground/60 mb-4">Tell us what coloumn you want to predict or analyze</p>
+              <p className="text-sm text-foreground/60 mb-4">Tell us what column you want to predict or analyze</p>
               <Input
                 placeholder="e.g., price"
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="bg-background/50 border-border/50"
+                className="bg-background/50 border-accent/30 focus-visible:border-cyan-400"
                 disabled={loading}
               />
             </Card>
 
             {/* Compare Models Card - Action Button */}
-            <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6 flex flex-col">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                <BarChart3 className="w-6 h-6 text-primary" />
+            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-purple-500 hover:shadow-purple-500/40 transition-all duration-300 p-6 flex flex-col group">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-purple-500/50 transition-all">
+                <BarChart3 className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold mb-2">Compare Models</h3>
               <p className="text-sm text-foreground/60 flex-1 mb-4">See results from multiple ML algorithms</p>
@@ -194,7 +194,7 @@ export default function Dashboard() {
           </div>
 
           {error && (
-            <Card className="border-border/40 border-destructive/50 bg-destructive/10 p-4">
+            <Card className="border-destructive/50 bg-destructive/10 p-4 backdrop-blur-sm">
               <p className="text-sm text-destructive">{error}</p>
             </Card>
           )}
@@ -204,7 +204,7 @@ export default function Dashboard() {
           {/* Results Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold">Model Evaluation Results</h2>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-cyan-400 bg-clip-text text-transparent">Model Evaluation Results</h2>
               <p className="text-foreground/60">Analysis complete • {modelResults.length} models tested</p>
             </div>
             <Button variant="outline" onClick={clearResults}>
@@ -214,22 +214,22 @@ export default function Dashboard() {
           </div>
 
           {/* Dataset Info */}
-          <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6">
+          <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 p-6">
             <h3 className="text-lg font-semibold mb-4">Dataset Information</h3>
             <div className="grid md:grid-cols-4 gap-4">
-              <div>
+              <div className="p-3 rounded-lg bg-background/50 border border-accent/20">
                 <p className="text-sm text-foreground/60">File Name</p>
-                <p className="font-medium">{file?.name}</p>
+                <p className="font-medium truncate">{file?.name}</p>
               </div>
-              <div>
+              <div className="p-3 rounded-lg bg-background/50 border border-accent/20">
                 <p className="text-sm text-foreground/60">Target Column</p>
-                <p className="font-medium">{goal}</p>
+                <p className="font-medium truncate">{goal}</p>
               </div>
-              <div>
+              <div className="p-3 rounded-lg bg-background/50 border border-accent/20">
                 <p className="text-sm text-foreground/60">Evaluation Status</p>
-                <p className="font-medium text-primary">{results.status}</p>
+                <p className="font-medium text-orange-500">{results.status}</p>
               </div>
-              <div>
+              <div className="p-3 rounded-lg bg-background/50 border border-accent/20">
                 <p className="text-sm text-foreground/60">Models Tested</p>
                 <p className="font-medium">{modelResults.length}</p>
               </div>
@@ -238,35 +238,37 @@ export default function Dashboard() {
 
           {/* Model Results Table */}
           {modelResults.length > 0 && (
-            <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6 overflow-x-auto">
+            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 p-6 overflow-x-auto">
               <h3 className="text-lg font-semibold mb-4">Model Performance Comparison</h3>
-              <table className="w-full text-sm">
-                <thead className="border-b border-border/40">
-                  <tr>
-                    <th className="text-left py-3 px-3 font-semibold">Model Name</th>
-                    <th className="text-right py-3 px-3 font-semibold">Accuracy</th>
-                    <th className="text-right py-3 px-3 font-semibold">R² Score</th>
-                    <th className="text-right py-3 px-3 font-semibold">MSE</th>
-                    <th className="text-right py-3 px-3 font-semibold">MAE</th>
-                    <th className="text-right py-3 px-3 font-semibold">Time (s)</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/20">
-                  {modelResults.map((model, idx) => {
-                    const isBest = modelResults[0].accuracy === model.accuracy
-                    return (
-                      <tr key={idx} className={isBest ? "bg-primary/5" : ""}>
-                        <td className="py-3 px-3 font-medium">{model.name}</td>
-                        <td className="text-right py-3 px-3">{(model.accuracy * 100).toFixed(2)}%</td>
-                        <td className="text-right py-3 px-3">{model.r2.toFixed(4)}</td>
-                        <td className="text-right py-3 px-3">{model.mse.toFixed(6)}</td>
-                        <td className="text-right py-3 px-3">{model.mae.toFixed(4)}</td>
-                        <td className="text-right py-3 px-3">{model.trainingTime.toFixed(2)}</td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+              <div className="overflow-x-auto rounded-lg border border-accent/20">
+                <table className="w-full text-sm">
+                  <thead className="border-b border-accent/30 bg-background/50">
+                    <tr>
+                      <th className="text-left py-3 px-4 font-semibold text-orange-500">Model Name</th>
+                      <th className="text-right py-3 px-4 font-semibold text-cyan-400">Accuracy</th>
+                      <th className="text-right py-3 px-4 font-semibold text-purple-500">R² Score</th>
+                      <th className="text-right py-3 px-4 font-semibold">MSE</th>
+                      <th className="text-right py-3 px-4 font-semibold">MAE</th>
+                      <th className="text-right py-3 px-4 font-semibold">Time (s)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-accent/20">
+                    {modelResults.map((model, idx) => {
+                      const isBest = modelResults[0].accuracy === model.accuracy
+                      return (
+                        <tr key={idx} className={isBest ? "bg-orange-500/10 hover:bg-orange-500/20" : "hover:bg-background/50"} >
+                          <td className="py-3 px-4 font-medium">{model.name}</td>
+                          <td className="text-right py-3 px-4 text-cyan-400 font-semibold">{(model.accuracy * 100).toFixed(2)}%</td>
+                          <td className="text-right py-3 px-4 text-purple-500 font-semibold">{model.r2.toFixed(4)}</td>
+                          <td className="text-right py-3 px-4">{model.mse.toFixed(6)}</td>
+                          <td className="text-right py-3 px-4">{model.mae.toFixed(4)}</td>
+                          <td className="text-right py-3 px-4">{model.trainingTime.toFixed(2)}</td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </Card>
           )}
 
@@ -275,22 +277,22 @@ export default function Dashboard() {
             <>
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Best Model */}
-                <Card className="border-border/40 bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-sm p-6">
-                  <h3 className="text-lg font-semibold mb-4">Best Performing Model</h3>
+                <Card className="border-orange-500/40 bg-gradient-to-br from-orange-500/20 to-orange-600/10 p-6 hover:border-orange-500/60 hover:shadow-orange-500/40 transition-all">
+                  <h3 className="text-lg font-semibold mb-4 text-orange-500">Best Performing Model</h3>
                   {modelResults[0] && (
                     <div className="space-y-3">
                       <div>
                         <p className="text-sm text-foreground/60">Model</p>
-                        <p className="text-2xl font-bold text-primary">{modelResults[0].name}</p>
+                        <p className="text-2xl font-bold text-orange-500">{modelResults[0].name}</p>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <div>
+                        <div className="p-3 rounded-lg bg-background/50 border border-orange-500/20">
                           <p className="text-xs text-foreground/60">Accuracy</p>
-                          <p className="text-xl font-bold">{(modelResults[0].accuracy * 100).toFixed(2)}%</p>
+                          <p className="text-xl font-bold text-cyan-400">{(modelResults[0].accuracy * 100).toFixed(2)}%</p>
                         </div>
-                        <div>
+                        <div className="p-3 rounded-lg bg-background/50 border border-orange-500/20">
                           <p className="text-xs text-foreground/60">R² Score</p>
-                          <p className="text-xl font-bold">{modelResults[0].r2.toFixed(4)}</p>
+                          <p className="text-xl font-bold text-purple-500">{modelResults[0].r2.toFixed(4)}</p>
                         </div>
                       </div>
                     </div>
@@ -298,12 +300,12 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Statistics */}
-                <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6">
-                  <h3 className="text-lg font-semibold mb-4">Statistical Summary</h3>
+                <Card className="border-cyan-400/40 bg-gradient-to-br from-cyan-400/20 to-cyan-500/10 p-6 hover:border-cyan-400/60 hover:shadow-cyan-400/40 transition-all">
+                  <h3 className="text-lg font-semibold mb-4 text-cyan-400">Statistical Summary</h3>
                   <div className="space-y-3">
-                    <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <div className="flex justify-between items-center py-2 border-b border-cyan-400/20">
                       <span className="text-sm text-foreground/60">Avg Accuracy</span>
-                      <span className="font-medium">
+                      <span className="font-semibold text-cyan-400">
                         {(
                           (modelResults.reduce((a, b) => a + b.accuracy, 0) / modelResults.length) *
                           100
@@ -311,13 +313,13 @@ export default function Dashboard() {
                         %
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <div className="flex justify-between items-center py-2 border-b border-cyan-400/20">
                       <span className="text-sm text-foreground/60">Avg R² Score</span>
-                      <span className="font-medium">
+                      <span className="font-semibold text-purple-500">
                         {(modelResults.reduce((a, b) => a + b.r2, 0) / modelResults.length).toFixed(4)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <div className="flex justify-between items-center py-2 border-b border-cyan-400/20">
                       <span className="text-sm text-foreground/60">Avg MSE</span>
                       <span className="font-medium">
                         {(modelResults.reduce((a, b) => a + b.mse, 0) / modelResults.length).toFixed(6)}
@@ -325,34 +327,34 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-between items-center py-2">
                       <span className="text-sm text-foreground/60">Total Time</span>
-                      <span className="font-medium">{modelResults.reduce((a, b) => a + b.trainingTime, 0).toFixed(2)}s</span>
+                      <span className="font-semibold text-orange-500">{modelResults.reduce((a, b) => a + b.trainingTime, 0).toFixed(2)}s</span>
                     </div>
                   </div>
                 </Card>
               </div>
 
               {/* Performance Ranges */}
-              <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6">
-                <h3 className="text-lg font-semibold mb-4">Performance Ranges</h3>
+              <Card className="border-purple-500/40 bg-gradient-to-br from-purple-500/20 to-purple-600/10 p-6 hover:border-purple-500/60 hover:shadow-purple-500/40 transition-all">
+                <h3 className="text-lg font-semibold mb-4 text-purple-500">Performance Ranges</h3>
                 <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <p className="text-sm text-foreground/60 mb-2">Accuracy Range</p>
-                    <div className="space-y-1">
+                  <div className="p-4 rounded-lg bg-background/50 border border-purple-500/20">
+                    <p className="text-sm text-foreground/60 mb-3">Accuracy Range</p>
+                    <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Min:</span>
-                        <span className="font-medium">
+                        <span className="text-foreground/70">Min:</span>
+                        <span className="font-semibold text-cyan-400">
                           {(Math.min(...modelResults.map((m) => m.accuracy)) * 100).toFixed(2)}%
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span>Max:</span>
-                        <span className="font-medium">
+                        <span className="text-foreground/70">Max:</span>
+                        <span className="font-semibold text-orange-500">
                           {(Math.max(...modelResults.map((m) => m.accuracy)) * 100).toFixed(2)}%
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Range:</span>
-                        <span className="font-medium">
+                      <div className="flex justify-between text-sm pt-2 border-t border-purple-500/20">
+                        <span className="text-foreground/70">Range:</span>
+                        <span className="font-semibold text-purple-500">
                           {(
                             (Math.max(...modelResults.map((m) => m.accuracy)) -
                               Math.min(...modelResults.map((m) => m.accuracy))) *
@@ -363,20 +365,20 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-foreground/60 mb-2">R² Score Range</p>
-                    <div className="space-y-1">
+                  <div className="p-4 rounded-lg bg-background/50 border border-purple-500/20">
+                    <p className="text-sm text-foreground/60 mb-3">R² Score Range</p>
+                    <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Min:</span>
-                        <span className="font-medium">{Math.min(...modelResults.map((m) => m.r2)).toFixed(4)}</span>
+                        <span className="text-foreground/70">Min:</span>
+                        <span className="font-semibold text-cyan-400">{Math.min(...modelResults.map((m) => m.r2)).toFixed(4)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span>Max:</span>
-                        <span className="font-medium">{Math.max(...modelResults.map((m) => m.r2)).toFixed(4)}</span>
+                        <span className="text-foreground/70">Max:</span>
+                        <span className="font-semibold text-orange-500">{Math.max(...modelResults.map((m) => m.r2)).toFixed(4)}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Range:</span>
-                        <span className="font-medium">
+                      <div className="flex justify-between text-sm pt-2 border-t border-purple-500/20">
+                        <span className="text-foreground/70">Range:</span>
+                        <span className="font-semibold text-purple-500">
                           {(Math.max(...modelResults.map((m) => m.r2)) - Math.min(...modelResults.map((m) => m.r2))).toFixed(
                             4
                           )}
@@ -384,24 +386,24 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-foreground/60 mb-2">Training Time Range</p>
-                    <div className="space-y-1">
+                  <div className="p-4 rounded-lg bg-background/50 border border-purple-500/20">
+                    <p className="text-sm text-foreground/60 mb-3">Training Time Range</p>
+                    <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>Min:</span>
-                        <span className="font-medium">
+                        <span className="text-foreground/70">Min:</span>
+                        <span className="font-semibold text-cyan-400">
                           {Math.min(...modelResults.map((m) => m.trainingTime)).toFixed(2)}s
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span>Max:</span>
-                        <span className="font-medium">
+                        <span className="text-foreground/70">Max:</span>
+                        <span className="font-semibold text-orange-500">
                           {Math.max(...modelResults.map((m) => m.trainingTime)).toFixed(2)}s
                         </span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span>Range:</span>
-                        <span className="font-medium">
+                      <div className="flex justify-between text-sm pt-2 border-t border-purple-500/20">
+                        <span className="text-foreground/70">Range:</span>
+                        <span className="font-semibold text-purple-500">
                           {(
                             Math.max(...modelResults.map((m) => m.trainingTime)) -
                             Math.min(...modelResults.map((m) => m.trainingTime))
@@ -420,7 +422,7 @@ export default function Dashboard() {
 
       {/* Recent Activities (only show if no results) */}
       {!results && (
-        <Card className="border-border/40 bg-card/50 backdrop-blur-sm p-6">
+        <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 p-6">
           <h2 className="text-xl font-semibold mb-6">Recent Analyses</h2>
           <div className="text-center py-12 text-foreground/60">
             <p>No analyses yet. Start by uploading a dataset to get going!</p>
