@@ -1,315 +1,444 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React from "react"
+
+type RobotAnimation = "idle" | "grabbing" | "hiding" | "peeking"
 
 interface RobotMascotProps {
-  isPasswordHidden?: boolean
-  focusedField?: string | null
+  variant?: RobotAnimation
 }
 
-export function RobotMascot({ isPasswordHidden = true, focusedField = null }: RobotMascotProps) {
-  const [eyeAnimation, setEyeAnimation] = useState<"normal" | "closed" | "looking">(() => {
-    if (isPasswordHidden) return "closed"
-    return "normal"
-  })
-  const [handAnimation, setHandAnimation] = useState<"wave" | "cover">(() => {
-    if (focusedField === "password") return "cover"
-    return "wave"
-  })
-  const [showCard, setShowCard] = useState(focusedField === "email")
-
-  useEffect(() => {
-    if (isPasswordHidden) {
-      setEyeAnimation("closed")
-    } else {
-      setEyeAnimation("normal")
-    }
-  }, [isPasswordHidden])
-
-  useEffect(() => {
-    if (focusedField === "password") {
-      if (!isPasswordHidden) {
-        setEyeAnimation("normal")
-        setHandAnimation("wave")
-      } else {
-        setEyeAnimation("closed")
-        setHandAnimation("cover")
-      }
-    } else if (focusedField === "email") {
-      setEyeAnimation("looking")
-      setHandAnimation("wave")
-      setShowCard(true)
-    } else if (focusedField) {
-      setEyeAnimation("looking")
-      setHandAnimation("wave")
-      setShowCard(false)
-    } else if (isPasswordHidden) {
-      setEyeAnimation("closed")
-      setHandAnimation("wave")
-      setShowCard(false)
-    } else {
-      setEyeAnimation("normal")
-      setHandAnimation("wave")
-      setShowCard(false)
-    }
-  }, [focusedField, isPasswordHidden])
-
-  const getEyeStyle = () => {
-    if (eyeAnimation === "closed") {
-      return { scaleY: 0.15, opacity: 0.6, transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" }
-    }
-    return { scaleY: 1, opacity: 1, transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)" }
-  }
-
-  const getPupilStyle = () => {
-    if (eyeAnimation === "closed") {
-      return { transform: "translateY(18px)", transition: "all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)" }
-    } else if (eyeAnimation === "looking") {
-      return { animation: "lookAround 1.5s ease-in-out infinite" }
-    }
-    return { transform: "translate(0, 0)", transition: "all 0.5s ease-in-out" }
-  }
-
-  const getMouthPath = () => {
-    return eyeAnimation === "normal" ? "M 118 72 Q 140 82 162 72" : "M 120 75 Q 140 73 160 75"
-  }
+export function RobotMascot({ variant = "idle" }: RobotMascotProps) {
+  const variantClass = {
+    idle: "robot-idle",
+    grabbing: "robot-grabbing",
+    hiding: "robot-hiding",
+    peeking: "robot-peeking",
+  }[variant]
 
   return (
-    <div className="flex justify-center items-center" style={{ animation: "float 4s ease-in-out infinite", perspective: "1000px" }}>
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
+    <div className={`relative w-full max-w-[320px] mx-auto h-[360px] ${variantClass}`} style={{ overflow: 'visible' }}>
+      <div className="relative w-full h-full" style={{ position: 'relative' }}>
+        <svg viewBox="0 0 320 360" className="robot-svg w-full h-full absolute top-0 left-0" style={{ zIndex: 5 }}>
+          <defs>
+            <linearGradient id="bodyShell" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.96" />
+              <stop offset="100%" stopColor="#f2f4f7" stopOpacity="0.96" />
+            </linearGradient>
+            <linearGradient id="visor" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#0d1b2a" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#0b1220" stopOpacity="0.98" />
+            </linearGradient>
+            <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#ff9a3c" />
+              <stop offset="100%" stopColor="#ff6a3a" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#ff9a3c" floodOpacity="0.18" />
+              <feDropShadow dx="0" dy="8" stdDeviation="14" floodColor="#00c9ff" floodOpacity="0.14" />
+            </filter>
+          </defs>
+
+          <g filter="url(#glow)">
+            <g className="head-group">
+              <rect x="92" y="34" width="136" height="112" rx="40" fill="url(#bodyShell)" stroke="#cfd6de" strokeWidth="3" />
+              <rect x="108" y="52" width="104" height="76" rx="26" fill="url(#visor)" stroke="#222a35" strokeWidth="2" />
+              <g className="eyes">
+                <g className="eye">
+                  <ellipse cx="136" cy="90" rx="16" ry="18" fill="#0b1220" />
+                  <circle className="pupil" cx="136" cy="90" r="10" fill="#ff7b35" />
+                  <circle cx="132" cy="86" r="4" fill="#fff" opacity="0.7" />
+                </g>
+                <g className="eye">
+                  <ellipse cx="184" cy="90" rx="16" ry="18" fill="#0b1220" />
+                  <circle className="pupil" cx="184" cy="90" r="10" fill="#ff7b35" />
+                  <circle cx="180" cy="86" r="4" fill="#fff" opacity="0.7" />
+                </g>
+              </g>
+              <path
+                d="M132 118 Q160 134 188 118"
+                stroke="#ff7b35"
+                strokeWidth="6"
+                strokeLinecap="round"
+                fill="none"
+                opacity="0.9"
+              />
+              <g className="antenna-left">
+                <line x1="124" y1="32" x2="116" y2="14" stroke="#737f8c" strokeWidth="4" strokeLinecap="round" />
+                <circle cx="114" cy="12" r="8" fill="url(#accent)" />
+              </g>
+              <g className="antenna-right">
+                <line x1="196" y1="32" x2="206" y2="12" stroke="#737f8c" strokeWidth="4" strokeLinecap="round" />
+                <circle cx="208" cy="10" r="8" fill="url(#accent)" />
+              </g>
+            </g>
+
+            <g className="body-group">
+              <rect x="88" y="140" width="144" height="128" rx="44" fill="url(#bodyShell)" stroke="#cfd6de" strokeWidth="3" />
+              <rect x="112" y="160" width="96" height="68" rx="18" fill="#f8fafc" stroke="#d7dde3" strokeWidth="2" />
+              <circle cx="160" cy="194" r="12" fill="#0d1b2a" opacity="0.3" />
+              <circle cx="160" cy="194" r="7" fill="url(#accent)" />
+              <rect x="136" y="236" width="48" height="12" rx="6" fill="#ffefe3" stroke="#ff9a3c" strokeWidth="2" />
+            </g>
+
+            <g className="arms" strokeWidth="3" strokeLinecap="round">
+              <g className="arm-left">
+                <line className="arm-upper" x1="94" y1="182" x2="62" y2="212" stroke="#cfd6de" />
+                <line className="arm-lower" x1="62" y1="212" x2="60" y2="244" stroke="#cfd6de" />
+                <circle cx="60" cy="246" r="13" fill="#0b1220" stroke="#cfd6de" />
+                <g className="hand-left">
+                  <ellipse cx="60" cy="258" rx="16" ry="20" fill="#2d3748" stroke="#cfd6de" strokeWidth="2" />
+                  <path d="M50 252 L50 272" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M54 250 L54 274" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M60 248 L60 276" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M66 250 L66 274" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M70 252 L70 272" stroke="#0b1220" strokeWidth="3" />
+                </g>
+              </g>
+              <g className="arm-right">
+                <line className="arm-upper" x1="226" y1="182" x2="258" y2="212" stroke="#cfd6de" />
+                <line className="arm-lower" x1="258" y1="212" x2="260" y2="244" stroke="#cfd6de" />
+                <circle cx="260" cy="246" r="13" fill="#0b1220" stroke="#cfd6de" />
+                <g className="hand-right">
+                  <ellipse cx="260" cy="258" rx="16" ry="20" fill="#2d3748" stroke="#cfd6de" strokeWidth="2" />
+                  <path d="M250 252 L250 272" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M254 250 L254 274" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M260 248 L260 276" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M266 250 L266 274" stroke="#0b1220" strokeWidth="3" />
+                  <path d="M270 252 L270 272" stroke="#0b1220" strokeWidth="3" />
+                </g>
+              </g>
+            </g>
+
+            {/* Hands covering eyes for hiding state */}
+            <g className="covering-hands" opacity="0">
+              <g className="cover-left">
+                <ellipse cx="130" cy="75" rx="20" ry="26" fill="#2d3748" stroke="#cfd6de" strokeWidth="2" />
+                <path d="M115 68 L115 88" stroke="#0b1220" strokeWidth="2" />
+                <path d="M120 66 L120 90" stroke="#0b1220" strokeWidth="2" />
+                <path d="M126 64 L126 92" stroke="#0b1220" strokeWidth="2" />
+                <path d="M132 64 L132 92" stroke="#0b1220" strokeWidth="2" />
+                <path d="M138 66 L138 90" stroke="#0b1220" strokeWidth="2" />
+              </g>
+              <g className="cover-right">
+                <ellipse cx="190" cy="75" rx="20" ry="26" fill="#2d3748" stroke="#cfd6de" strokeWidth="2" />
+                <path d="M175 68 L175 88" stroke="#0b1220" strokeWidth="2" />
+                <path d="M181 66 L181 90" stroke="#0b1220" strokeWidth="2" />
+                <path d="M187 64 L187 92" stroke="#0b1220" strokeWidth="2" />
+                <path d="M193 64 L193 92" stroke="#0b1220" strokeWidth="2" />
+                <path d="M199 66 L199 90" stroke="#0b1220" strokeWidth="2" />
+              </g>
+            </g>
+
+            <g className="legs">
+              <g>
+                <rect x="122" y="268" width="30" height="50" rx="14" fill="#e9edf2" stroke="#cfd6de" strokeWidth="3" />
+                <rect x="112" y="318" width="50" height="18" rx="10" fill="url(#accent)" />
+              </g>
+              <g>
+                <rect x="168" y="268" width="30" height="50" rx="14" fill="#e9edf2" stroke="#cfd6de" strokeWidth="3" />
+                <rect x="158" y="318" width="50" height="18" rx="10" fill="url(#accent)" />
+              </g>
+            </g>
+          </g>
+        </svg>
+
+        {/* Wall for hiding/peeking states */}
+        <div className="wall-overlay absolute top-0 left-0 w-full h-full pointer-events-none" style={{ zIndex: 15 }}>
+          <svg viewBox="0 0 320 360" className="w-full h-full">
+            <defs>
+              <linearGradient id="brickGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#8b7355" />
+                <stop offset="50%" stopColor="#a0826d" />
+                <stop offset="100%" stopColor="#6d5d4b" />
+              </linearGradient>
+              <linearGradient id="mortarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#d4c5b9" />
+                <stop offset="100%" stopColor="#b8a99c" />
+              </linearGradient>
+              <filter id="brickShadow">
+                <feDropShadow dx="1" dy="1" stdDeviation="1" floodOpacity="0.3" />
+              </filter>
+            </defs>
+            
+            {/* Mortar background */}
+            <rect x="0" y="0" width="320" height="360" fill="url(#mortarGrad)" />
+            
+            {/* Brick rows */}
+            <g filter="url(#brickShadow)">
+              {/* Row 1 */}
+              <rect x="2" y="2" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="82" y="2" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="162" y="2" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="242" y="2" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              {/* Row 2 - offset */}
+              <rect x="-18" y="34" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="62" y="34" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="142" y="34" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="222" y="34" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="302" y="34" width="36" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              {/* Row 3 */}
+              <rect x="2" y="66" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="82" y="66" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="162" y="66" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="242" y="66" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              {/* Row 4 - offset */}
+              <rect x="-18" y="98" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="62" y="98" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="142" y="98" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="222" y="98" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="302" y="98" width="36" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              {/* Row 5 */}
+              <rect x="2" y="130" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="82" y="130" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="162" y="130" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="242" y="130" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              {/* Row 6 - offset */}
+              <rect x="-18" y="162" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="62" y="162" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="142" y="162" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="222" y="162" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="302" y="162" width="36" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              {/* Continue pattern for remaining rows */}
+              <rect x="2" y="194" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="82" y="194" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="162" y="194" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="242" y="194" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              <rect x="-18" y="226" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="62" y="226" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="142" y="226" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="222" y="226" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="302" y="226" width="36" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              <rect x="2" y="258" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="82" y="258" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="162" y="258" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="242" y="258" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              <rect x="-18" y="290" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="62" y="290" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="142" y="290" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="222" y="290" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="302" y="290" width="36" height="28" rx="2" fill="url(#brickGrad)" />
+              
+              <rect x="2" y="322" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="82" y="322" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="162" y="322" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+              <rect x="242" y="322" width="76" height="28" rx="2" fill="url(#brickGrad)" />
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes floatSoft {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          25% { transform: translateY(-12px) rotate(-2deg); }
+          50% { transform: translateY(-8px) rotate(0deg); }
+          75% { transform: translateY(-12px) rotate(2deg); }
         }
-        
-        @keyframes headBob {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
+
+        @keyframes excitedBounce {
+          0%, 100% { transform: translateY(0px) scale(1); }
+          15% { transform: translateY(-35px) scale(1.05); }
+          30% { transform: translateY(-15px) scale(0.98); }
+          45% { transform: translateY(-30px) scale(1.03); }
+          60% { transform: translateY(-10px) scale(0.99); }
+          75% { transform: translateY(-25px) scale(1.02); }
         }
-        
-        @keyframes armWaveLeft {
-          0%, 100% { transform: rotate(-5deg); }
-          50% { transform: rotate(15deg); }
+
+        @keyframes armReachExcited {
+          0% { transform: rotate(0deg) translateY(0); }
+          20% { transform: rotate(-50deg) translateY(-40px); }
+          40% { transform: rotate(-45deg) translateY(-35px); }
+          60% { transform: rotate(-55deg) translateY(-45px); }
+          80% { transform: rotate(-50deg) translateY(-40px); }
+          100% { transform: rotate(-48deg) translateY(-38px); }
         }
-        
-        @keyframes armWaveRight {
-          0%, 100% { transform: rotate(5deg); }
-          50% { transform: rotate(-15deg); }
+
+        @keyframes hideSlideDown {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(160px); }
+          100% { transform: translateY(320px); }
         }
-        
-        @keyframes leftHandCover {
-          0% { transform: translateY(0px) translateX(0px); }
-          100% { transform: translateY(-45px) translateX(-15px); }
+
+        @keyframes peekSneaky {
+          0%, 100% { transform: translate(200px, 0) scale(0.9) rotate(10deg); }
+          25% { transform: translate(210px, -8px) scale(0.92) rotate(12deg); }
+          50% { transform: translate(195px, -5px) scale(0.88) rotate(8deg); }
+          75% { transform: translate(205px, -10px) scale(0.91) rotate(11deg); }
         }
-        
-        @keyframes rightHandCover {
-          0% { transform: translateY(0px) translateX(0px); }
-          100% { transform: translateY(-45px) translateX(15px); }
+
+        @keyframes wallSlideIn {
+          0% { opacity: 0; transform: translateX(-100%); }
+          100% { opacity: 1; transform: translateX(0); }
         }
-        
-        @keyframes antennaRotate {
+
+        @keyframes antennaWiggle {
           0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(-8deg); }
-          75% { transform: rotate(8deg); }
+          25% { transform: rotate(-15deg); }
+          50% { transform: rotate(0deg); }
+          75% { transform: rotate(15deg); }
         }
-        
-        @keyframes lookAround {
+
+        @keyframes blink {
+          0%, 90%, 100% { transform: scaleY(1); }
+          92%, 94% { transform: scaleY(0.1); }
+        }
+
+        @keyframes pupilLookAround {
           0%, 100% { transform: translate(0, 0); }
-          25% { transform: translate(8px, -5px); }
-          75% { transform: translate(-8px, -5px); }
+          20% { transform: translate(-4px, -3px); }
+          40% { transform: translate(4px, 0); }
+          60% { transform: translate(3px, 3px); }
+          80% { transform: translate(-3px, 2px); }
+        }
+
+        @keyframes waveEnthusiastic {
+          0%, 100% { transform: rotate(0deg) translateX(0); }
+          15% { transform: rotate(-25deg) translateX(-3px); }
+          30% { transform: rotate(20deg) translateX(2px); }
+          45% { transform: rotate(-18deg) translateX(-2px); }
+          60% { transform: rotate(15deg) translateX(1px); }
+          75% { transform: rotate(-10deg) translateX(-1px); }
+        }
+
+        @keyframes bodyTilt {
+          0%, 100% { transform: rotate(0deg); }
+          33% { transform: rotate(3deg); }
+          66% { transform: rotate(-3deg); }
+        }
+
+        @keyframes headBob {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+
+        /* Wall is hidden by default */
+        .wall-overlay {
+          opacity: 0;
+          transition: opacity 0.1s ease-out;
+        }
+
+        /* Idle state - playful and fun */
+        .robot-idle {
+          animation: floatSoft 5s ease-in-out infinite;
+        }
+
+        .robot-idle .head-group {
+          animation: headBob 3s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        .robot-idle .body-group {
+          animation: bodyTilt 6s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        .robot-idle .hand-left,
+        .robot-idle .hand-right { 
+          animation: waveEnthusiastic 1.8s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        .robot-idle .antenna-left,
+        .robot-idle .antenna-right {
+          animation: antennaWiggle 2.5s ease-in-out infinite;
+          transform-origin: 50% 100%;
+        }
+
+        .robot-idle .antenna-right {
+          animation-delay: 0.3s;
+        }
+
+        /* Grabbing state - excited reaching */
+        .robot-grabbing {
+          animation: excitedBounce 1.5s ease-in-out infinite;
+        }
+
+        .robot-grabbing .arm-left,
+        .robot-grabbing .arm-right {
+          animation: armReachExcited 1.5s ease-in-out infinite;
+          transform-origin: 50% 100%;
+        }
+
+        .robot-grabbing .antenna-left,
+        .robot-grabbing .antenna-right {
+          animation: antennaWiggle 0.8s ease-in-out infinite;
+          transform-origin: 50% 100%;
+        }
+
+        .robot-grabbing .head-group {
+          animation: headBob 1.5s ease-in-out infinite;
+          transform-origin: center;
+        }- eyes are alive */
+        .eyes .eye { 
+          animation: blink 4s ease-in-out infinite; 
+          transform-origin: center; 
         }
         
-        @keyframes cardFloat {
-          0%, 100% { transform: translateX(0px) translateY(0px) rotate(-8deg); }
-          50% { transform: translateX(8px) translateY(-8px) rotate(-8deg); }
+        .eyes .pupil { 
+          animation: pupilLookAround 4s ease-in-out infinite; 
+        }
+
+        /* Delay second eye blink for natural look */
+        .eye:last-child {
+          animation-delay: 0.1s;
+          opacity: 1 !important;
+          animation: wallSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* Peeking state - sneaky peek with personality */
+        .robot-peeking .robot-svg {
+          animation: peekSneaky 2.5s ease-in-out infinite;
+        }
+
+        .robot-peeking .wall-overlay {
+          opacity: 1 !important;
+        }
+
+        .robot-peeking .head-group {
+          animation: headBob 1.2s ease-in-out infinite;
+          transform-origin: center;
+        }
+
+        .robot-peeking .antenna-left {
+          animation: antennaWiggle 1s ease-in-out infinite;
+          transform-origin: 50% 100%;
+        }
+
+        .robot-peeking .body-group,
+        .robot-peeking .arms,
+        .robot-peeking .legs {
+          opacity: 0.2;
+        }
+
+        .robot-peeking .eye:first-child {
+          opacity: 0.2;
+        }
+
+        /* Default animations */
+        .eyes .eye { 
+          animation: blink 6s ease-in-out infinite; 
+          transform-origin: center; 
         }
         
-        .robot-head {
-          animation: headBob 2s ease-in-out infinite;
+        .eyes .pupil { 
+          animation: pupilShift 3.4s ease-in-out infinite; 
         }
-        
-        .robot-left-arm {
-          transform-origin: 75px 220px;
-          animation: armWaveLeft 1.5s ease-in-out infinite;
-          transition: animation 0.3s ease-out;
-        }
-        
-        .robot-left-arm.cover {
-          animation: leftHandCover 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        
-        .robot-right-arm {
-          transform-origin: 205px 220px;
-          animation: armWaveRight 1.5s ease-in-out infinite;
-          transition: animation 0.3s ease-out;
-        }
-        
-        .robot-right-arm.cover {
-          animation: rightHandCover 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        
-        .robot-antenna {
-          animation: antennaRotate 2.5s ease-in-out infinite;
-          transform-origin: 140px 20px;
-        }
-        
-        .robot-card {
-          animation: cardFloat 2s ease-in-out infinite;
-        }
-        
-        .eye-left, .eye-right {
-          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        /* Hide covering hands */
+        .covering-hands {
+          display: none;
         }
       `}</style>
-
-      <svg viewBox="0 0 280 400" width={200} height={286} style={{ filter: "drop-shadow(0 0 40px rgba(0, 212, 255, 0.3))" }}>
-        {/* Antenna */}
-        <g className="robot-antenna">
-          <line x1="140" y1="0" x2="140" y2="20" stroke="#ff6b35" strokeWidth="3" strokeLinecap="round" />
-          <circle cx="140" cy="0" r="6" fill="#ff6b35" stroke="#00d4ff" strokeWidth="1" />
-        </g>
-
-        {/* Head - Large Circle */}
-        <g className="robot-head">
-          {/* Head Glow */}
-          <circle cx="140" cy="60" r="50" fill="none" stroke="#ff6b35" strokeWidth="2" opacity="0.4" />
-          
-          {/* Head Body */}
-          <circle cx="140" cy="60" r="48" fill="#0a0a0f" stroke="#ff6b35" strokeWidth="3" />
-
-          {/* Left Eye */}
-          <ellipse 
-            className="eye-left"
-            cx="118" 
-            cy="55" 
-            rx="16" 
-            ry="18" 
-            fill="#00d4ff"
-            style={{ ...getEyeStyle() }}
-          />
-
-          {/* Right Eye */}
-          <ellipse 
-            className="eye-right"
-            cx="162" 
-            cy="55" 
-            rx="16" 
-            ry="18" 
-            fill="#00d4ff"
-            style={{ ...getEyeStyle() }}
-          />
-
-          {/* Left Pupil */}
-          <circle 
-            cx="118" 
-            cy="55" 
-            r="6" 
-            fill="#1a1a2e"
-            style={getPupilStyle()}
-          />
-
-          {/* Right Pupil */}
-          <circle 
-            cx="162" 
-            cy="55" 
-            r="6" 
-            fill="#1a1a2e"
-            style={getPupilStyle()}
-          />
-
-          {/* Mouth */}
-          <path
-            d={getMouthPath()}
-            stroke="#ff6b35"
-            strokeWidth="2.5"
-            fill="none"
-            strokeLinecap="round"
-            style={{ transition: "d 0.3s ease-in-out" }}
-          />
-        </g>
-
-        {/* Body - Large Rectangle */}
-        <g>
-          {/* Outer Body Frame */}
-          <rect x="60" y="110" width="160" height="150" rx="12" fill="none" stroke="#ff6b35" strokeWidth="3" />
-          
-          {/* Inner Body */}
-          <rect x="65" y="115" width="150" height="140" rx="10" fill="#0a0a0f" stroke="#00d4ff" strokeWidth="2" opacity="0.7" />
-
-          {/* Chest Light */}
-          <circle cx="140" cy="185" r="12" fill="#ff6b35" opacity="0.8" />
-          <circle cx="140" cy="185" r="8" fill="#ff6b35" opacity="1" />
-
-          {/* Left Arm */}
-          <g className={`robot-left-arm ${handAnimation === "cover" ? "cover" : ""}`}>
-            {/* Upper Arm */}
-            <rect x="40" y="195" width="50" height="32" rx="10" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="2.5" />
-            
-            {/* Forearm/Hand */}
-            <rect x="25" y="220" width="38" height="40" rx="8" fill="#0d0d15" stroke="#00d4ff" strokeWidth="2" />
-            
-            {/* Fingers */}
-            <rect x="20" y="215" width="8" height="14" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <rect x="32" y="212" width="8" height="17" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <rect x="44" y="214" width="8" height="15" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <rect x="54" y="218" width="8" height="12" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-          </g>
-
-          {/* Right Arm */}
-          <g className={`robot-right-arm ${handAnimation === "cover" ? "cover" : ""}`}>
-            {/* Upper Arm */}
-            <rect x="190" y="195" width="50" height="32" rx="10" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="2.5" />
-            
-            {/* Forearm/Hand */}
-            <rect x="217" y="220" width="38" height="40" rx="8" fill="#0d0d15" stroke="#00d4ff" strokeWidth="2" />
-            
-            {/* Fingers */}
-            <rect x="252" y="215" width="8" height="14" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <rect x="240" y="212" width="8" height="17" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <rect x="228" y="214" width="8" height="15" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-            <rect x="218" y="218" width="8" height="12" rx="2" fill="#1a1a2e" stroke="#00d4ff" strokeWidth="1.5" />
-          </g>
-        </g>
-
-        {/* Legs */}
-        <g>
-          {/* Left Leg */}
-          <rect x="85" y="265" width="24" height="55" rx="8" fill="#0a0a0f" stroke="#00d4ff" strokeWidth="2.5" />
-
-          {/* Right Leg */}
-          <rect x="171" y="265" width="24" height="55" rx="8" fill="#0a0a0f" stroke="#00d4ff" strokeWidth="2.5" />
-
-          {/* Left Foot */}
-          <rect x="75" y="320" width="44" height="24" rx="6" fill="none" stroke="#00d4ff" strokeWidth="2" />
-          <rect x="82" y="327" width="10" height="12" rx="2" fill="#00d4ff" opacity="0.4" />
-          <rect x="104" y="327" width="10" height="12" rx="2" fill="#00d4ff" opacity="0.4" />
-
-          {/* Right Foot */}
-          <rect x="161" y="320" width="44" height="24" rx="6" fill="none" stroke="#00d4ff" strokeWidth="2" />
-          <rect x="168" y="327" width="10" height="12" rx="2" fill="#00d4ff" opacity="0.4" />
-          <rect x="190" y="327" width="10" height="12" rx="2" fill="#00d4ff" opacity="0.4" />
-        </g>
-
-        {/* Email Card */}
-        {showCard && (
-          <g className="robot-card" style={{ transform: "translate(210px, 35px)" }}>
-            <rect x="0" y="0" width="60" height="50" rx="6" fill="#ff6b35" stroke="#00d4ff" strokeWidth="2" />
-            <rect x="6" y="10" width="48" height="32" rx="3" fill="none" stroke="#1a1a2e" strokeWidth="2" />
-            <path d="M 6 10 L 30 26 L 54 10" fill="none" stroke="#1a1a2e" strokeWidth="2" strokeLinecap="round" />
-          </g>
-        )}
-
-        {/* Glow Filter */}
-        <defs>
-          <filter id="glow">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-            <feMerge>
-              <feMergeNode in="coloredBlur" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
-      </svg>
     </div>
   )
 }

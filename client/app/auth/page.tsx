@@ -23,6 +23,16 @@ export default function AuthPage() {
   const router = useRouter()
   const auth = useAuth()
 
+  type RobotVariant = "idle" | "grabbing" | "hiding" | "peeking"
+  const robotVariant: RobotVariant =
+    focusedField === "email"
+      ? "grabbing"
+      : focusedField === "password" && !showPassword
+        ? "hiding"
+        : focusedField === "password" && showPassword
+          ? "peeking"
+          : "idle"
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError("")
@@ -39,7 +49,6 @@ export default function AuthPage() {
         await auth.signup(email, password)
       }
 
-      // Redirect to dashboard
       router.push("/dashboard")
     } catch (err: any) {
       setError(err?.message || "Authentication failed. Please try again.")
@@ -49,25 +58,23 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-12">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-background via-background to-primary/5 flex items-center justify-center px-4 py-12">
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl" />
       </div>
 
-      <div className="w-full max-w-6xl relative z-10">
-        <div className="grid md:grid-cols-2 gap-8 items-center">
-          {/* Left Side - Robot Mascot */}
-          <div className="hidden md:flex justify-center items-center">
-            <RobotMascot 
-              isPasswordHidden={!showPassword && focusedField === "password"}
-              focusedField={focusedField}
-            />
-          </div>
+      {/* Floating robot in the back */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+        <div className="animate-robot-float opacity-80">
+          <RobotMascot variant={robotVariant} />
+        </div>
+      </div>
 
-          {/* Right Side - Auth Form */}
-          <div className="w-full">
+      <div className="w-full max-w-6xl relative z-10">
+        <div className="flex justify-center">
+          <div className="w-full max-w-xl">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 mb-8 hover:opacity-80 transition">
               <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-cyan-400 rounded-lg flex items-center justify-center">
@@ -79,7 +86,7 @@ export default function AuthPage() {
             </Link>
 
             {/* Auth Card */}
-            <Card className="border-accent/40 bg-card/80 backdrop-blur-xl shadow-2xl p-8 hover:border-accent/60 transition-all">
+            <Card className="border-accent/40 bg-card/80 backdrop-blur-xl shadow-2xl p-8 hover:border-accent/60 transition-all relative z-20">
               {/* Mode Tabs */}
               <div className="flex gap-2 mb-8 bg-muted/50 p-1 rounded-lg border border-accent/20">
                 <button
@@ -189,9 +196,9 @@ export default function AuthPage() {
                 )}
 
                 {/* Submit Button */}
-                <Button 
-                  type="submit" 
-                  disabled={loading} 
+                <Button
+                  type="submit"
+                  disabled={loading}
                   className="w-full text-lg font-semibold py-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:shadow-lg hover:shadow-orange-500/50 text-white"
                   size="lg"
                 >
@@ -199,9 +206,9 @@ export default function AuthPage() {
                 </Button>
 
                 {mode === "login" && (
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     className="w-full gap-2 border-accent/40 hover:border-cyan-400 hover:bg-cyan-400/10 font-medium"
                   >
                     Continue with Google
@@ -213,9 +220,9 @@ export default function AuthPage() {
               <div className="mt-6 text-center text-sm text-foreground/60">
                 {mode === "login" ? (
                   <>
-                    Don't have an account?{" "}
-                    <button 
-                      onClick={() => setMode("signup")} 
+                    Don't have an account? {""}
+                    <button
+                      onClick={() => setMode("signup")}
                       className="text-orange-500 hover:text-cyan-400 font-semibold transition"
                     >
                       Sign up
@@ -223,9 +230,9 @@ export default function AuthPage() {
                   </>
                 ) : (
                   <>
-                    Already have an account?{" "}
-                    <button 
-                      onClick={() => setMode("login")} 
+                    Already have an account? {""}
+                    <button
+                      onClick={() => setMode("login")}
                       className="text-orange-500 hover:text-cyan-400 font-semibold transition"
                     >
                       Sign in
@@ -246,6 +253,20 @@ export default function AuthPage() {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes robotFloatAround {
+          0% { transform: translate(-80px, -40px) scale(1); }
+          25% { transform: translate(120px, -20px) scale(1.05); }
+          50% { transform: translate(160px, 60px) scale(0.98); }
+          75% { transform: translate(-100px, 80px) scale(1.02); }
+          100% { transform: translate(-140px, -20px) scale(1); }
+        }
+
+        .animate-robot-float {
+          animation: robotFloatAround 16s ease-in-out infinite alternate;
+        }
+      `}</style>
     </div>
   )
 }
