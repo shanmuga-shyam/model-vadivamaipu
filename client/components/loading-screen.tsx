@@ -259,3 +259,87 @@ function RobotTrack({ mode, variant }: TrackProps) {
 }
 
 export default LoadingScreen;
+
+function FullWidthRunner({ mode }: { mode: Mode }) {
+  const isFly = mode === "fly";
+
+  return (
+    <div className={`pointer-events-none absolute left-0 top-28 w-full overflow-visible`}> 
+      <div className={`full-run ${isFly ? "fly" : "walk"}`} aria-hidden>
+        <div className={`runner-crate`} />
+        <div className={`runner-robot`}>
+          <div className="robot-body" />
+        </div>
+      </div>
+
+      <style jsx>{`
+        .full-run {
+          position: relative;
+          height: 120px;
+          width: 100%;
+        }
+
+        .full-run .runner-robot,
+        .full-run .runner-crate {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          will-change: transform, opacity;
+        }
+
+        .runner-robot {
+          left: -120px;
+          width: 96px;
+          height: 64px;
+          border-radius: 12px;
+          background: linear-gradient(180deg,#0f1724,#0b1220);
+          box-shadow: 0 8px 30px rgba(2,6,23,0.6), 0 0 30px rgba(34,211,238,0.06) inset;
+        }
+
+        .robot-body {
+          width:100%; height:100%; border-radius:inherit; background:linear-gradient(90deg,#0b1220,#0f1724);
+        }
+
+        .runner-crate {
+          left: -200px;
+          width: 56px;
+          height: 48px;
+          border-radius:6px;
+          background: linear-gradient(180deg,#1f2937,#111827);
+          box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+          border: 2px solid rgba(255,255,255,0.03);
+        }
+
+        .full-run.walk .runner-robot { animation: run-walk 3.6s linear infinite; }
+        .full-run.walk .runner-crate { animation: run-crate 3.6s linear infinite; }
+
+        .full-run.fly .runner-robot { animation: run-fly 3.6s linear infinite; }
+        .full-run.fly .runner-crate { animation: run-crate 3.6s linear infinite; }
+
+        @keyframes run-walk {
+          0% { transform: translateX(-120px) translateY(0); }
+          20% { transform: translateX(calc(10vw)) translateY(-4px); }
+          50% { transform: translateX(45vw) translateY(-6px); }
+          80% { transform: translateX(80vw) translateY(-2px); }
+          100% { transform: translateX(110vw) translateY(0); }
+        }
+
+        @keyframes run-fly {
+          0% { transform: translateX(-140px) translateY(0) scale(1); }
+          20% { transform: translateX(calc(15vw)) translateY(-40px) scale(1.02); }
+          50% { transform: translateX(50vw) translateY(-68px) scale(1.06); }
+          80% { transform: translateX(85vw) translateY(-34px) scale(1.03); }
+          100% { transform: translateX(120vw) translateY(0) scale(1); }
+        }
+
+        @keyframes run-crate {
+          0% { transform: translateX(-200px); opacity: 0.95 }
+          20% { transform: translateX(calc(8vw)); opacity: 1 }
+          50% { transform: translateX(44vw); opacity: 1 }
+          80% { transform: translateX(82vw); opacity: 1 }
+          100% { transform: translateX(118vw); opacity: 0.95 }
+        }
+      `}</style>
+    </div>
+  );
+}
