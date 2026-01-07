@@ -22,7 +22,7 @@ export function LoadingScreen() {
       const next = MODES[Math.floor(Math.random() * MODES.length)];
       setMode(next);
       setStatusIndex((prev) => (prev + 1) % STATUS_LINES.length);
-    }, 3800);
+    }, 1800);
 
     return () => clearInterval(interval);
   }, []);
@@ -94,7 +94,7 @@ export function LoadingScreen() {
         .loading-gradient {
           background: linear-gradient(90deg, #10b981, #22d3ee, #f59e0b, #10b981);
           background-size: 200% 100%;
-          animation: slide 2.4s ease-in-out infinite;
+          animation: slide 1.2s ease-in-out infinite;
           box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
         }
 
@@ -116,15 +116,15 @@ export function LoadingScreen() {
         }
 
         .walk-cycle {
-          animation: walk 3.2s ease-in-out infinite;
+          animation: walk 1.6s ease-in-out infinite;
         }
 
         .fly-cycle {
-          animation: fly 3.2s ease-in-out infinite;
+          animation: fly 1.6s ease-in-out infinite;
         }
 
         .crate {
-          animation: crate 3.2s ease-in-out infinite;
+          animation: crate 1.6s ease-in-out infinite;
         }
 
         @keyframes walk {
@@ -310,11 +310,11 @@ function FullWidthRunner({ mode }: { mode: Mode }) {
           border: 2px solid rgba(255,255,255,0.03);
         }
 
-        .full-run.walk .runner-robot { animation: run-walk 3.6s linear infinite; }
-        .full-run.walk .runner-crate { animation: run-crate 3.6s linear infinite; }
+        .full-run.walk .runner-robot { animation: run-walk 1.8s linear infinite; }
+        .full-run.walk .runner-crate { animation: run-crate 1.8s linear infinite; }
 
-        .full-run.fly .runner-robot { animation: run-fly 3.6s linear infinite; }
-        .full-run.fly .runner-crate { animation: run-crate 3.6s linear infinite; }
+        .full-run.fly .runner-robot { animation: run-fly 1.8s linear infinite; }
+        .full-run.fly .runner-crate { animation: run-crate 1.8s linear infinite; }
 
         @keyframes run-walk {
           0% { transform: translateX(-120px) translateY(0); }
