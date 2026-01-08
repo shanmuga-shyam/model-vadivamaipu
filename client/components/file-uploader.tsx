@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useRef } from "react"
+import { useLoading } from "@/components/loading-context"
 import { Upload, File, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -14,6 +15,7 @@ export function FileUploader({ onFileSelect }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const { showLoading, hideLoading } = useLoading()
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -34,6 +36,9 @@ export function FileUploader({ onFileSelect }: FileUploaderProps) {
       if (file.type === "text/csv" || file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
         setSelectedFile(file)
         onFileSelect?.(file)
+        // show uploading gif for 3 seconds
+        showLoading && showLoading("uploading")
+        setTimeout(() => hideLoading && hideLoading(), 3000)
       }
     }
   }
@@ -44,6 +49,9 @@ export function FileUploader({ onFileSelect }: FileUploaderProps) {
       const file = files[0]
       setSelectedFile(file)
       onFileSelect?.(file)
+      // show uploading gif for 3 seconds
+      showLoading && showLoading("uploading")
+      setTimeout(() => hideLoading && hideLoading(), 3000)
     }
   }
 

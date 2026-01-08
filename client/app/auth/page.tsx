@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Brain, Mail, Lock, User, ArrowLeft, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/components/auth-context"
+import { useLoading } from "@/components/loading-context"
 import { RobotMascot } from "@/components/robot-mascot"
 
 type AuthMode = "login" | "signup"
@@ -22,6 +23,7 @@ export default function AuthPage() {
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const router = useRouter()
   const auth = useAuth()
+  const { showLoading, hideLoading } = useLoading()
 
   type RobotVariant = "idle" | "grabbing" | "hiding" | "peeking"
   const robotVariant: RobotVariant =
@@ -37,6 +39,8 @@ export default function AuthPage() {
     e.preventDefault()
     setError("")
     setLoading(true)
+    // Show the "search for employee" gif during login
+    showLoading("search")
 
     const formData = new FormData(e.currentTarget)
     const email = formData.get("email") as string
@@ -54,6 +58,7 @@ export default function AuthPage() {
       setError(err?.message || "Authentication failed. Please try again.")
     } finally {
       setLoading(false)
+      hideLoading()
     }
   }
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useLoading } from "@/components/loading-context"
 import { Card } from "@/components/ui/card"
 import { ChatMessage } from "@/components/chat-message"
 import { ChatInput } from "@/components/chat-input"
@@ -24,6 +25,7 @@ export default function AnalyzePage() {
     },
   ])
   const [loading, setLoading] = useState(false)
+  const { showLoading, hideLoading } = useLoading()
 
   const handleSubmit = async (message: string, file?: File) => {
     // Add user message
@@ -36,18 +38,38 @@ export default function AnalyzePage() {
 
     setMessages((prev) => [...prev, userMessage])
     setLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `Great! I've received your dataset${file ? ` (${file.name})` : ""} and understand you want to "${message}". Let me analyze the data and test multiple ML algorithms for you...`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-      setLoading(false)
-    }, 1000)
+    // Use loading context to show type-specific gifs
+    if (file) {
+      showLoading("uploading")
+      // simulate upload first (3s), then analysis
+      setTimeout(() => {
+        showLoading("sandy")
+        setTimeout(() => {
+          const assistantMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            role: "assistant",
+            content: `Great! I've received your dataset (${file.name}) and understand you want to "${message}". Let me analyze the data and test multiple ML algorithms for you...`,
+            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          }
+          setMessages((prev) => [...prev, assistantMessage])
+          setLoading(false)
+          hideLoading()
+        }, 3000)
+      }, 3000)
+    } else {
+      showLoading("untitled")
+      setTimeout(() => {
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: "assistant",
+          content: `Thanks — I'll analyze that request: "${message}" and report back shortly.`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        }
+        setMessages((prev) => [...prev, assistantMessage])
+        setLoading(false)
+        hideLoading()
+      }, 3000)
+    }
   }
 
   return (

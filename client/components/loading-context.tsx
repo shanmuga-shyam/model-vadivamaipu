@@ -5,7 +5,8 @@ import { LoadingScreen } from "./loading-screen"
 
 interface LoadingContextType {
   isLoading: boolean
-  showLoading: () => void
+  loadingType: string | null
+  showLoading: (type?: string) => void
   hideLoading: () => void
 }
 
@@ -13,6 +14,7 @@ const LoadingContext = createContext<LoadingContextType | undefined>(undefined)
 
 export function LoadingProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true) // Start with true to show on load
+  const [loadingType, setLoadingType] = useState<string | null>(null)
   const [loadingStartTime, setLoadingStartTime] = useState<number | null>(Date.now())
   const [mounted, setMounted] = useState(false)
 
@@ -29,7 +31,8 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer)
   }, [])
 
-  const showLoading = () => {
+  const showLoading = (type?: string) => {
+    setLoadingType(type ?? null)
     setIsLoading(true)
     setLoadingStartTime(Date.now())
   }
@@ -47,10 +50,12 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
       // Wait for remaining time
       setTimeout(() => {
         setIsLoading(false)
+        setLoadingType(null)
         setLoadingStartTime(null)
       }, minDuration - elapsedTime)
     } else {
       setIsLoading(false)
+      setLoadingType(null)
       setLoadingStartTime(null)
     }
   }
@@ -61,8 +66,8 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <LoadingContext.Provider value={{ isLoading, showLoading, hideLoading }}>
-      {isLoading && <LoadingScreen />}
+    <LoadingContext.Provider value={{ isLoading, loadingType, showLoading, hideLoading }}>
+      {isLoading && <LoadingScreen type={loadingType ?? undefined} />}
       {children}
     </LoadingContext.Provider>
   )
