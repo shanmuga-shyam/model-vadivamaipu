@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
+import { useLoading } from "@/components/loading-context"
 import { useAuth } from "@/components/auth-context"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -27,6 +28,7 @@ interface EvaluationResult {
 
 export default function Dashboard() {
   const auth = useAuth()
+  const { showLoading, hideLoading } = useLoading()
   const [file, setFile] = useState<File | null>(null)
   const [goal, setGoal] = useState("")
   const [loading, setLoading] = useState(false)
@@ -118,6 +120,22 @@ export default function Dashboard() {
     setFile(null)
     setGoal("")
   }
+
+  // Show robot greeting on first arrival after login (set by auth page)
+  useEffect(() => {
+    try {
+      const flag = sessionStorage.getItem("showRobotGreeting")
+      if (flag) {
+        sessionStorage.removeItem("showRobotGreeting")
+        showLoading && showLoading("robot-hi")
+        setTimeout(() => {
+          hideLoading && hideLoading()
+        }, 3500)
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [showLoading, hideLoading])
 
   return (
     <div className="space-y-8">

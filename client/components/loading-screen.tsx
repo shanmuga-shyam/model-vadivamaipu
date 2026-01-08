@@ -29,16 +29,25 @@ export function LoadingScreen({ type }: LoadingScreenProps) {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="max-w-md w-full p-6 bg-card/90 border border-border/40 rounded-2xl flex flex-col items-center gap-4">
-        {src ? (
-          // Use plain img so developer can drop gifs into public/loading-gifs/
-          // Expected filenames: robot-says-hi.gif, search-employee.gif, sandy-loading.gif, untitled.gif, uploading-to-cloud.gif, default-loading.gif
-          <img src={src} alt="loading" className="w-48 h-48 object-contain" />
-        ) : (
-          <div className="w-48 h-48 flex items-center justify-center">Loading...</div>
-        )}
-        <p className="text-sm text-foreground/70">Please wait — loading</p>
-      </div>
+      {type === "robot-hi" ? (
+        // Fullscreen hero for robot greeting — centered and sized to fit viewport
+        <div className="w-full h-full flex items-center justify-center p-2 bg-black/40">
+          <img
+            src={src}
+            alt="robot says hi"
+            className="max-w-[98vw] max-h-[98vh] object-contain shadow-2xl"
+          />
+        </div>
+      ) : (
+        <div className="max-w-md w-full p-6 bg-card/90 border border-border/40 rounded-2xl flex flex-col items-center gap-4">
+          {src ? (
+            <img src={src} alt="loading" className="w-48 h-48 object-contain" />
+          ) : (
+            <div className="w-48 h-48 flex items-center justify-center">Loading...</div>
+          )}
+          <p className="text-sm text-foreground/70">Please wait — loading</p>
+        </div>
+      )}
     </div>
   )
 }

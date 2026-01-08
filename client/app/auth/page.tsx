@@ -53,6 +53,12 @@ export default function AuthPage() {
         await auth.signup(email, password)
       }
 
+      // Mark dashboard to show robot greeting on first load, then navigate
+      try {
+        sessionStorage.setItem("showRobotGreeting", "1")
+      } catch (e) {
+        // ignore if not available
+      }
       router.push("/dashboard")
     } catch (err: any) {
       setError(err?.message || "Authentication failed. Please try again.")

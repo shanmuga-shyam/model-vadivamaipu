@@ -13,8 +13,9 @@ interface LoadingContextType {
 const LoadingContext = createContext<LoadingContextType | undefined>(undefined)
 
 export function LoadingProvider({ children }: { children: ReactNode }) {
-  const [isLoading, setIsLoading] = useState(true) // Start with true to show on load
-  const [loadingType, setLoadingType] = useState<string | null>(null)
+  // Start loading on initial page load and show 'sandy' gif on refresh
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingType, setLoadingType] = useState<string | null>("sandy")
   const [loadingStartTime, setLoadingStartTime] = useState<number | null>(Date.now())
   const [mounted, setMounted] = useState(false)
 
