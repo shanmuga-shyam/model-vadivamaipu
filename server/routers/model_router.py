@@ -35,8 +35,11 @@ async def evaluate_models(
     db.commit()
     db.refresh(dataset)
 
-    # Run model evaluations
-    result = run_models_parallel(file_path, target_col)
+    # Run model evaluations (validate target column errors)
+    try:
+        result = run_models_parallel(file_path, target_col)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     # Save each model's result to DB
     for r in result["results"]:
