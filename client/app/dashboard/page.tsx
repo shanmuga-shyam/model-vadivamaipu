@@ -80,19 +80,19 @@ export default function Dashboard() {
       const data: EvaluationResult = await res.json()
       setResults(data)
 
-      // Parse model results from response
-      if (data.data?.models) {
-        setModelResults(data.data.models)
-      } else if (data.data) {
-        // If no models array, create mock results based on data
-        const mockResults: ModelResult[] = [
-          { name: "Linear Regression", accuracy: 0.85, r2: 0.82, mse: 0.0234, mae: 0.112, trainingTime: 0.45 },
-          { name: "Random Forest", accuracy: 0.92, r2: 0.9, mse: 0.0156, mae: 0.089, trainingTime: 2.34 },
-          { name: "SVM (RBF)", accuracy: 0.88, r2: 0.86, mse: 0.0198, mae: 0.101, trainingTime: 1.23 },
-          { name: "Gradient Boosting", accuracy: 0.9, r2: 0.88, mse: 0.0172, mae: 0.095, trainingTime: 3.12 },
-        ]
-        setModelResults(mockResults)
-      }
+      // Parse model results from response (use live data only)
+      const resultsArray = data.data?.results || data.data?.models || []
+      const mapped: ModelResult[] = resultsArray.map((it: any) => {
+        const name = it.model || it.name || "Model"
+        // Prefer explicit accuracy (classification). Otherwise fall back to R² for a numeric proxy.
+        const accuracy = typeof it.accuracy === "number" ? it.accuracy : (it.r2_test ?? it.r2_train ?? 0)
+        const r2 = it.r2_test ?? it.r2_train ?? (it.r2 ?? 0)
+        const mse = it.mse ?? 0
+        const mae = it.mae ?? 0
+        const trainingTime = it.training_time ?? it.trainingTime ?? 0
+        return { name, accuracy, r2, mse, mae, trainingTime }
+      })
+      setModelResults(mapped)
 
       // Save result to history
       try {
