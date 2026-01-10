@@ -11,11 +11,16 @@ import { cn } from "@/lib/utils"
 interface ChatInputProps {
   onSubmit?: (message: string, file?: File) => void
   disabled?: boolean
+  onAssistantReply?: (reply: string) => void
 }
 
 export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [contextText, setContextText] = useState("")
+  const [mode, setMode] = useState<"model" | "agent">("model")
+  const [modelName, setModelName] = useState("gemini-pro")
+  const [waiting, setWaiting] = useState(false)
   const [showFileUploader, setShowFileUploader] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -23,7 +28,42 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
     e.preventDefault()
     if (!message.trim() && !selectedFile) return
 
+    // notify parent of user message
     onSubmit?.(message, selectedFile || undefined)
+
+    // send to backend /chat endpoint
+    ;(async () => {
+      setWaiting(true)
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            context: contextText,
+            message,
+            mode,
+            model_name: modelName,
+          }),
+        })
+
+        if (!res.ok) {
+          const err = await res.text()
+          throw new Error(err || res.statusText)
+        }
+
+        const data = await res.json()
+        const reply = data.reply || data.summary || ""
+        if (reply) {
+          // notify parent about assistant reply
+          ;(onAssistantReply as any)?.(reply)
+        }
+      } catch (err) {
+        console.error("chat submit error", err)
+      } finally {
+        setWaiting(false)
+      }
+    })()
+
     setMessage("")
     setSelectedFile(null)
     setShowFileUploader(false)
@@ -37,6 +77,31 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
 
   return (
     <div className="space-y-4">
+      <div className="space-y-2">
+        <label className="text-xs text-foreground/60">Optional context for the assistant</label>
+        <textarea
+          value={contextText}
+          onChange={(e) => setContextText(e.target.value)}
+          placeholder="Add any context the assistant should use (dataset description, constraints...)"
+          className="w-full px-3 py-2 rounded-md bg-card border border-border/40 resize-none"
+          rows={2}
+        />
+
+        <div className="flex gap-2 items-center mt-2">
+          <label className="text-xs">Mode:</label>
+          <select value={mode} onChange={(e) => setMode(e.target.value as any)} className="px-2 py-1 rounded-md">
+            <option value="model">Model (answer directly)</option>
+            <option value="agent">Agent (action plan / do the work)</option>
+          </select>
+
+          {mode === "model" && (
+            <select value={modelName} onChange={(e) => setModelName(e.target.value)} className="px-2 py-1 rounded-md">
+              <option value="gemini-pro">gemini-pro</option>
+              <option value="gpt-4o">gpt-4o</option>
+            </select>
+          )}
+        </div>
+      </div>
       {showFileUploader && <FileUploader onFileSelect={setSelectedFile} />}
 
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -69,7 +134,7 @@ export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
 
           <Button
             type="submit"
-            disabled={disabled || (!message.trim() && !selectedFile)}
+            disabled={disabled || waiting || (!message.trim() && !selectedFile)}
             size="icon"
             className="self-end"
           >
