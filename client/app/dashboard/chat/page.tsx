@@ -11,31 +11,7 @@ export default function ChatPage() {
   const handleUserSubmit = (message: string) => {
     if (!message) return
     setMessages((m) => [...m, { role: "user", content: message }])
-    setLoading(true)
-
-    ;(async () => {
-      try {
-        const res = await fetch("/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ context: "", message, mode: "model", model_name: "gemini-pro" }),
-        })
-
-        if (!res.ok) {
-          const text = await res.text()
-          throw new Error(text || res.statusText)
-        }
-
-        const data = await res.json()
-        const reply = data.reply || data.summary || ""
-        if (reply) setMessages((m) => [...m, { role: "assistant", content: reply }])
-      } catch (err) {
-        setMessages((m) => [...m, { role: "assistant", content: "Error: could not get reply from assistant." }])
-        console.error("chat error", err)
-      } finally {
-        setLoading(false)
-      }
-    })()
+    // ChatInput will perform the request and call onAssistantReply when response arrives.
   }
 
   const handleAssistantReply = (reply: string) => {
@@ -55,7 +31,13 @@ export default function ChatPage() {
         </div>
       </div>
 
-      <ChatInput onSubmit={(_, __) => handleUserSubmit(_ as string)} disabled={loading} onAssistantReply={handleAssistantReply} />
+      <ChatInput
+        onSubmit={(msg) => handleUserSubmit(msg)}
+        disabled={loading}
+        onAssistantReply={(reply) => {
+          handleAssistantReply(reply)
+        }}
+      />
     </div>
   )
 }

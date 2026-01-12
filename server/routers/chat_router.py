@@ -47,6 +47,8 @@ async def chat_endpoint(payload: dict):
     message = payload.get("message", "")
     mode = payload.get("mode", "model")
     model_name = payload.get("model_name") or "gemini-pro"
+    # optional conversation history: list of {role: 'user'|'assistant', content: str}
+    history = payload.get("history") or []
 
     # Attempt to use google.generativeai if available
     try:
@@ -64,12 +66,33 @@ async def chat_endpoint(payload: dict):
         genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         model = genai.GenerativeModel(model_name)
 
-        prompt = f"""
-        You are an AI assistant. Use the following context and user message to produce a concise helpful reply.
-        Context: {context}
-        User message: {message}
-        Provide a clear answer and, if relevant, recommended next steps.
-        """
+        # System prompt: instruct the assistant about the application domain so it answers with authority.
+        system_prompt = (
+            "You are an expert assistant for the Model Vadivamaipu AutoML application. "
+            "The user will ask about datasets, model training, evaluation metrics (R2, MSE, MAE), and next steps. "
+            "Always answer concisely, reference metrics when present, compare models by metric values, "
+            "provide clear actionable recommendations, and include example commands or code snippets when relevant. "
+            "If the user provides dataset or results JSON, analyze it and highlight the best model, strengths and weaknesses, "
+            "and any data quality issues. Keep responses safe and avoid hallucination; if information is missing, ask for it."
+        )
+
+        # Build combined prompt with optional history to maintain context
+        parts = [system_prompt]
+        if context:
+            parts.append(f"Context: {context}")
+
+        # Include short history if provided
+        if isinstance(history, list) and history:
+            hist_text = []
+            for h in history:
+                role = h.get("role", "user")
+                content = h.get("content", "")
+                hist_text.append(f"{role.upper()}: {content}")
+            parts.append("Conversation history:\n" + "\n".join(hist_text))
+
+        parts.append(f"User message: {message}")
+
+        prompt = "\n\n".join(parts)
 
         response = model.generate_content(prompt)
         return {"reply": response.text}
