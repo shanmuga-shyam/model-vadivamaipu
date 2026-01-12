@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Brain, LayoutDashboard, History, Settings, LogOut, ChevronLeft, ChevronRight, Plus } from "lucide-react"
+import { Brain, LayoutDashboard, History, Settings, LogOut, ChevronLeft, ChevronRight, Plus, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/components/auth-context"
@@ -22,6 +22,7 @@ export function Sidebar() {
 
   const menuItems = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { href: "/dashboard/chat", icon: MessageSquare, label: "Chat" },
     { href: "/dashboard/results", icon: History, label: "Results" },
     { href: "/dashboard/history", icon: History, label: "History" },
     { href: "/dashboard/settings", icon: Settings, label: "Settings" },

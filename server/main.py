@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import auth_router, dataset_router, model_router, result_router, history_router
+from routers import chat_router
 
 app = FastAPI(title="Model Vadivamaipu Backend")
 
@@ -22,6 +23,7 @@ app.include_router(dataset_router.router, prefix="/dataset", tags=["Dataset"])
 app.include_router(model_router.router, prefix="/model", tags=["Model"])
 app.include_router(result_router.router, prefix="/results", tags=["Results"])
 app.include_router(history_router.router, prefix="/history", tags=["History"])
+app.include_router(chat_router.router, prefix="", tags=["Chat"])
 
 
 if __name__ == "__main__":

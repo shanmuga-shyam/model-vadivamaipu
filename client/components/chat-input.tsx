@@ -14,7 +14,7 @@ interface ChatInputProps {
   onAssistantReply?: (reply: string) => void
 }
 
-export function ChatInput({ onSubmit, disabled }: ChatInputProps) {
+export function ChatInput({ onSubmit, disabled, onAssistantReply }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [contextText, setContextText] = useState("")
