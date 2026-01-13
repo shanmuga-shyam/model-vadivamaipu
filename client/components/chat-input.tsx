@@ -35,7 +35,7 @@ export function ChatInput({ onSubmit, disabled, onAssistantReply }: ChatInputPro
     ;(async () => {
       setWaiting(true)
       try {
-        const res = await fetch("/chat", {
+        const res = await fetch("http://localhost:8000/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

@@ -9,10 +9,9 @@ numpy
 python-multipart
 langchain
 openai
+sentence-transformers
 passlib==1.7.4
 bcrypt==3.2.2
 python-dotenv
 python-jose[cryptography]
-alembic 
-pydantic[email]
 google-generative-ai
