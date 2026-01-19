@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 import importlib
-import os
+from core.config import settings
 
 router = APIRouter()
 
@@ -17,8 +17,12 @@ async def explain_results(data: dict):
             detail="google.generativeai is not installed; install the 'google-generative-ai' package."
         )
 
-    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-    model = genai.GenerativeModel("gemini-pro")
+    api_key = settings.GEMINI_API_KEY
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured")
+
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel("gemini-2.5-flash-lite")
 
     prompt = f"""
     You are an AI assistant for an ML evaluation platform.
@@ -46,14 +50,14 @@ async def chat_endpoint(payload: dict):
     context = payload.get("context", "")
     message = payload.get("message", "")
     mode = payload.get("mode", "model")
-    model_name = payload.get("model_name") or "gemini-pro"
+    model_name = payload.get("model_name") or "gemini-2.5-flash-lite"
     # optional conversation history: list of {role: 'user'|'assistant', content: str}
     history = payload.get("history") or []
 
     if not message:
         raise HTTPException(status_code=400, detail="Message is required")
 
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = settings.GEMINI_API_KEY
     if not api_key:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured")
 
