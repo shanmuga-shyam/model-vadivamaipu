@@ -31,11 +31,11 @@ export function LoadingScreen({ type }: LoadingScreenProps) {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
       {type === "robot-hi" ? (
         // Fullscreen hero for robot greeting — centered and sized to fit viewport
-        <div className="w-full h-full flex items-center justify-center p-2 bg-black/40">
+        <div className="w-full h-full flex items-center justify-center p-0 bg-black/40">
           <img
             src={src}
             alt="robot says hi"
-            className="max-w-[98vw] max-h-[98vh] object-contain shadow-2xl"
+            className="robot-gif w-[35vw] max-h-[45vh] max-w-[300px] object-contain shadow-2xl"
           />
         </div>
       ) : (

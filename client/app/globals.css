@@ -199,3 +199,17 @@
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
+
+/* Improve scaling quality for large GIFs (robot greeting) */
+.robot-gif {
+  image-rendering: auto;
+  -webkit-image-rendering: auto;
+  /* Hint WebKit to use higher-quality scaling when available */
+  image-rendering: -webkit-optimize-contrast;
+  /* Avoid nearest-neighbor/pixelated scaling by providing fallbacks */
+  image-rendering: crisp-edges;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

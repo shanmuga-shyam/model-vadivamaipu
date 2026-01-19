@@ -77,7 +77,14 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
 export function useLoading() {
   const context = useContext(LoadingContext)
   if (context === undefined) {
-    throw new Error("useLoading must be used within LoadingProvider")
+    // Fallback: don't throw during SSR or if provider is missing.
+    // Returning no-op functions keeps components safe when provider isn't mounted.
+    return {
+      isLoading: false,
+      loadingType: null,
+      showLoading: () => {},
+      hideLoading: () => {},
+    }
   }
   return context
 }
