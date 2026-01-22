@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Upload, MessageSquare, BarChart3, Loader, X } from "lucide-react"
+import { RobotMascot } from "@/components/robot-mascot"
+
 
 interface ModelResult {
   name: string
@@ -36,12 +38,46 @@ export default function Dashboard() {
   const [results, setResults] = useState<EvaluationResult | null>(null)
   const [modelResults, setModelResults] = useState<ModelResult[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [robotVariant, setRobotVariant] = useState<"idle" | "flying" | "landing" | "holding">("idle")
+  const [targetCard, setTargetCard] = useState<HTMLElement | null>(null)
+  const cardRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = e.currentTarget.files?.[0]
     if (uploadedFile) {
       setFile(uploadedFile)
       setError("")
+    }
+  }
+
+  const handleCardHover = (cardKey: string) => {
+    const card = cardRefs.current[cardKey]
+    if (card && (robotVariant === "idle" || robotVariant === "holding")) {
+      console.log(`🤖 Robot flying to ${cardKey} card`)
+      setTargetCard(card)
+      setRobotVariant("flying")
+    }
+  }
+
+  const handleCardClick = (cardKey: string) => {
+    const card = cardRefs.current[cardKey]
+    if (card && (robotVariant === "idle" || robotVariant === "holding")) {
+      console.log(`🤖 Robot clicked to fly to ${cardKey} card`)
+      setTargetCard(card)
+      setRobotVariant("flying")
+    }
+  }
+
+  const handleCardLeave = () => {
+    console.log("Robot returning to idle")
+    setTargetCard(null)
+    setRobotVariant("idle")
+  }
+
+  const handleRobotAnimationComplete = () => {
+    console.log("Robot animation completed")
+    if (robotVariant === "flying") {
+      setRobotVariant("holding")
     }
   }
 
@@ -138,7 +174,15 @@ export default function Dashboard() {
   }, [showLoading, hideLoading])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 ">
+      {/* AI Robot Assistant */}
+      <RobotMascot 
+        variant={robotVariant} 
+        position="top-right" 
+        targetCard={targetCard}
+        onAnimationComplete={handleRobotAnimationComplete}
+      />
+
       {/* Welcome Section */}
       <div className="space-y-2">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-500 via-cyan-400 to-purple-500 bg-clip-text text-transparent">Welcome back!</h1>
@@ -150,7 +194,13 @@ export default function Dashboard() {
           {/* Quick Start Cards */}
           <div className="grid md:grid-cols-3 gap-6">
             {/* Upload Dataset Card */}
-            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-primary hover:shadow-orange-500/40 transition-all duration-300 p-6 cursor-pointer group">
+            <Card 
+              ref={(el) => { if (el) cardRefs.current['upload'] = el }}
+              onMouseEnter={() => handleCardHover('upload')}
+              onMouseLeave={handleCardLeave}
+              onClick={() => handleCardClick('upload')}
+              className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-primary hover:shadow-orange-500/40 transition-all duration-300 p-6 cursor-pointer group"
+            >
               <input
                 ref={fileInputRef}
                 type="file"
@@ -172,7 +222,13 @@ export default function Dashboard() {
             </Card>
 
             {/* Describe Your Goal Card */}
-            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-accent hover:shadow-cyan-400/40 transition-all duration-300 p-6 group">
+            <Card 
+              ref={(el) => { if (el) cardRefs.current['goal'] = el }}
+              onMouseEnter={() => handleCardHover('goal')}
+              onMouseLeave={handleCardLeave}
+              onClick={() => handleCardClick('goal')}
+              className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-accent hover:shadow-cyan-400/40 transition-all duration-300 p-6 group"
+            >
               <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-cyan-500 rounded-lg flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-cyan-400/50 transition-all">
                 <MessageSquare className="w-6 h-6 text-white" />
               </div>
@@ -188,7 +244,13 @@ export default function Dashboard() {
             </Card>
 
             {/* Compare Models Card - Action Button */}
-            <Card className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-purple-500 hover:shadow-purple-500/40 transition-all duration-300 p-6 flex flex-col group">
+            <Card 
+              ref={(el) => { if (el) cardRefs.current['compare'] = el }}
+              onMouseEnter={() => handleCardHover('compare')}
+              onMouseLeave={handleCardLeave}
+              onClick={() => handleCardClick('compare')}
+              className="border-accent/40 bg-gradient-to-br from-card to-card/50 hover:border-purple-500 hover:shadow-purple-500/40 transition-all duration-300 p-6 flex flex-col group"
+            >
               <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mb-4 group-hover:shadow-lg group-hover:shadow-purple-500/50 transition-all">
                 <BarChart3 className="w-6 h-6 text-white" />
               </div>
