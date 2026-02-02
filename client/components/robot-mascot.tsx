@@ -16,6 +16,8 @@ interface RobotMascotProps {
   variant?: RobotAnimation
   targetCard?: HTMLElement | null
   position?: "top-right" | "bottom-right" | "card-edge"
+  clickable?: boolean
+  onClick?: (() => void) | undefined
   onAnimationComplete?: () => void
 }
 
@@ -23,6 +25,8 @@ export function RobotMascot({
   variant = "idle", 
   targetCard = null,
   position = "top-right",
+  clickable = false,
+  onClick,
   onAnimationComplete 
 }: RobotMascotProps) {
   const [currentVariant, setCurrentVariant] = useState<RobotAnimation>(variant)
@@ -90,9 +94,6 @@ export function RobotMascot({
   // Handle flying animation with grid-based flowing path
   useEffect(() => {
     if (variant === "flying" && targetCard) {
-      setIsFlying(true)
-      setCurrentVariant("flying")
-      
       const gridConfig = createGrid(100)
       
       // Get viewport center for coordinate conversion
@@ -111,7 +112,17 @@ export function RobotMascot({
         // Flying from resting position (fixed bottom-left: left: 200px, bottom: 50px)
         screenX = 200 + 60  // left position + robot center offset
         screenY = window.innerHeight - 50 - 70  // bottom position converted to top-based
+        
+        // IMPORTANT: Set the center-based position to match the resting position
+        // BEFORE we switch to flying mode, to avoid the jump to center
+        const startCenterX = screenX - centerX - 60
+        const startCenterY = screenY - centerY - 70
+        setRobotPosition({ x: startCenterX, y: startCenterY })
       }
+      
+      // Now enable flying mode after position is set
+      setIsFlying(true)
+      setCurrentVariant("flying")
       
       console.log('📍 Starting from screen position:', { screenX, screenY })
       console.log('📐 Window size:', { width: window.innerWidth, height: window.innerHeight })
@@ -245,7 +256,7 @@ export function RobotMascot({
   
   const positionStyle = isAtRest 
     ? {
-        left: '200px',      // Fixed position from left (accounting for sidebar)
+        left: '24px',      // Fixed position from left (bottom-left)
         bottom: '50px',     // Fixed position from bottom
         top: 'auto',
         transform: 'none',
@@ -261,10 +272,14 @@ export function RobotMascot({
     <div
       ref={robotRef}
       className={`fixed z-50 w-[120px] h-[140px] ${variantClass}`}
+      onClick={() => {
+        if (clickable && onClick) onClick()
+      }}
       style={{
         ...positionStyle,
         transition: hasInitialPosition && isAtRest ? 'left 2s ease-in-out, bottom 2s ease-in-out' : 'none',
-        pointerEvents: 'none',
+        pointerEvents: clickable ? 'auto' : 'none',
+        cursor: clickable ? 'pointer' : 'default',
         willChange: 'transform, left, bottom'
       }}
     >

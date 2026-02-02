@@ -23,6 +23,9 @@ export default function HistoryPage() {
   const [error, setError] = useState("")
 
   useEffect(() => {
+    // Only fetch after token is available
+    if (!auth.token) return
+
     const fetchHistory = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/results/history`, {
@@ -48,7 +51,7 @@ export default function HistoryPage() {
       }
     }
     fetchHistory()
-  }, [])
+  }, [auth.token])
 
   const handleDelete = async (index: number) => {
     const newHistory = history.filter((_, i) => i !== index)
