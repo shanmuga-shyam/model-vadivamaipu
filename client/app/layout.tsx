@@ -5,7 +5,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "next-themes"
 import { AuthProvider } from "@/components/auth-context"
 import { LoadingProvider } from "@/components/loading-context"
-import GlobalRobot from "@/components/GlobalRobot"
 import "./globals.css"
 
 const _geist = Geist({ subsets: ["latin"] })
@@ -31,7 +30,6 @@ export default function RootLayout({
               {children}
             </AuthProvider>
           </LoadingProvider>
-          <GlobalRobot />
         </ThemeProvider>
         <Analytics />
       </body>

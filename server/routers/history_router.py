@@ -7,7 +7,7 @@ from models.user_model import User
 
 router = APIRouter()
 
-@router.get("/history")
+@router.get("/")
 def get_user_history(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
