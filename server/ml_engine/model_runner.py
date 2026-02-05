@@ -104,10 +104,14 @@ def run_models_parallel(file_path: str, target_col: str):
     y = df[target_col]
 
     # Determine task type
-    is_regression = pd.api.types.is_numeric_dtype(y)
+    n_unique = int(y.nunique(dropna=True))
+    is_numeric = pd.api.types.is_numeric_dtype(y)
 
-    if not is_regression:
-        # Encode labels for classification
+    # Heuristic: treat as classification when the column is non-numeric, OR
+    # when it's numeric but has relatively few unique values (likely discrete classes).
+    # This handles cases like 0/1 labels stored as numbers.
+    if (not is_numeric) or (is_numeric and n_unique <= 20):
+        # Classification path
         le = LabelEncoder()
         try:
             y_model = le.fit_transform(y.astype(str))
@@ -117,8 +121,11 @@ def run_models_parallel(file_path: str, target_col: str):
         n_classes = len(np.unique(y_model))
         if n_classes < 2:
             raise ValueError(f"Target column '{target_col}' must have at least 2 classes for classification.")
+        is_regression = False
     else:
+        # Regression path
         y_model = y
+        is_regression = True
 
     # Dynamic split for small datasets
     test_size = 0.2
