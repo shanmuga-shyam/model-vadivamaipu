@@ -24,6 +24,7 @@ class QLearningAgent:
         epsilon: float = 0.2,
         epsilon_min: float = 0.01,
         epsilon_decay: float = 0.995,
+        seed: Optional[int] = None,
     ):
         self.n_states = n_states
         self.n_actions = n_actions
@@ -33,18 +34,21 @@ class QLearningAgent:
         self.epsilon_min = epsilon_min
         self.epsilon_decay = epsilon_decay
 
+        # Use a local RNG for deterministic behavior when seed is provided
+        self._rng = random.Random(seed)
+
         # Q-table initialized to zeros
         self.q_table: List[List[float]] = [[0.0 for _ in range(n_actions)] for _ in range(n_states)]
 
     def choose_action(self, state: int) -> int:
         """Epsilon-greedy action selection."""
-        if random.random() < self.epsilon:
-            return random.randrange(self.n_actions)
+        if self._rng.random() < self.epsilon:
+            return self._rng.randrange(self.n_actions)
         # choose best action (break ties randomly)
         qvals = self.q_table[state]
         max_q = max(qvals)
         best = [i for i, q in enumerate(qvals) if q == max_q]
-        return random.choice(best)
+        return self._rng.choice(best)
 
     def learn(self, state: int, action: int, reward: float, next_state: int, done: bool) -> None:
         """Perform a single Q-learning update step."""
@@ -82,6 +86,9 @@ def train_on_env(
     agent: QLearningAgent,
     n_episodes: int = 1000,
     max_steps_per_episode: int = 200,
+    verbose: bool = False,
+    early_stop_avg_reward: Optional[float] = None,
+    early_stop_window: int = 50,
 ) -> Tuple[List[float], List[int]]:
     """Train the provided agent on a small discrete env.
 
@@ -108,5 +115,18 @@ def train_on_env(
         agent.decay_epsilon()
         episode_rewards.append(total_reward)
         episode_lengths.append(steps)
+
+        # Verbose progress
+        if verbose and (ep % max(1, n_episodes // 10) == 0 or ep < 5):
+            recent_avg = sum(episode_rewards[-early_stop_window:]) / min(len(episode_rewards), early_stop_window)
+            print(f"Episode {ep+1}/{n_episodes}  reward={total_reward:.3f}  avg{early_stop_window}={recent_avg:.3f}  eps={agent.epsilon:.4f}")
+
+        # Early stopping when recent average reaches target
+        if early_stop_avg_reward is not None and len(episode_rewards) >= early_stop_window:
+            recent_avg = sum(episode_rewards[-early_stop_window:]) / early_stop_window
+            if recent_avg >= early_stop_avg_reward:
+                if verbose:
+                    print(f"Early stopping at episode {ep+1}: recent avg {recent_avg:.3f} >= {early_stop_avg_reward}")
+                break
 
     return episode_rewards, episode_lengths

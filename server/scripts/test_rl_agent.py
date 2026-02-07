@@ -2,6 +2,13 @@
 
 Run with: `python server/scripts/test_rl_agent.py`
 """
+import sys
+from pathlib import Path
+
+# Ensure project root is on sys.path so `server` package resolves when
+# running this script directly (e.g. `python server/scripts/test_rl_agent.py`).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from server.ml_engine.rl_agent import QLearningAgent, train_on_env
 
 
@@ -39,10 +46,19 @@ class SimpleLineEnv:
 
 def main():
     env = SimpleLineEnv(n_states=8, max_steps=30)
-    agent = QLearningAgent(n_states=env.n_states, n_actions=env.n_actions, epsilon=0.5)
+    # Use a fixed seed for reproducible runs and slightly higher learning rate
+    agent = QLearningAgent(n_states=env.n_states, n_actions=env.n_actions, alpha=0.3, epsilon=0.6, epsilon_decay=0.995, seed=42)
 
     print("Training agent on SimpleLineEnv...")
-    rewards, lengths = train_on_env(env, agent, n_episodes=800, max_steps_per_episode=30)
+    rewards, lengths = train_on_env(
+        env,
+        agent,
+        n_episodes=800,
+        max_steps_per_episode=30,
+        verbose=True,
+        early_stop_avg_reward=0.8,
+        early_stop_window=50,
+    )
 
     avg_last_50 = sum(rewards[-50:]) / 50 if len(rewards) >= 50 else sum(rewards) / max(1, len(rewards))
     print(f"Average reward (last 50 episodes): {avg_last_50:.3f}")
