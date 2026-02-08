@@ -7,6 +7,8 @@ from ml_engine.model_runner import run_models_parallel
 from models.data_models import Dataset, ModelResult
 from models.user_model import User
 from routers.auth_router import get_current_user
+import pandas as pd
+from pathlib import Path
 
 router = APIRouter()
 UPLOAD_DIR = "server/uploads"
@@ -60,3 +62,54 @@ async def evaluate_models(
         "dataset_id": dataset.id,
         "data": result
     }
+
+
+@router.get("/run_test")
+def run_models_test():
+    """Unauthenticated helper endpoint used for quick server-side testing.
+    It will look for a CSV in common upload locations, pick a target column,
+    run `run_models_parallel`, and return the evaluation JSON.
+    """
+    # Locate a sample CSV (mirrors scripts/test_run_models.py)
+    cwd = Path.cwd()
+    candidates = [cwd / "uploads", cwd / "server" / "uploads", cwd / "data", cwd]
+    sample = None
+    for base in candidates:
+        if base.exists() and base.is_dir():
+            for f in base.iterdir():
+                if f.suffix.lower() in (".csv", ".tsv"):
+                    sample = f
+                    break
+        if sample:
+            break
+    if not sample:
+        # fallback: search recursively
+        for f in cwd.rglob("*.csv"):
+            sample = f
+            break
+
+    if not sample:
+        raise HTTPException(status_code=404, detail="No CSV found in uploads or repository for test")
+
+    try:
+        df = pd.read_csv(sample)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to read CSV: {e}")
+
+    # choose target column heuristically
+    prefer = ["target", "label", "salary", "y", "class"]
+    target = None
+    for p in prefer:
+        if p in df.columns:
+            target = p
+            break
+    if not target:
+        target = df.columns[-1]
+
+    try:
+        result = run_models_parallel(str(sample), target)
+        return {"status": "success", "file": str(sample), "target": target, "data": result}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
