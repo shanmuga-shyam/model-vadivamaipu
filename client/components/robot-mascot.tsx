@@ -37,6 +37,8 @@ export function RobotMascot({
   // Use fixed initial values to avoid hydration mismatch - will be updated in useEffect
   const [robotPosition, setRobotPosition] = useState({ x: -400, y: 200 })
   const [isFlying, setIsFlying] = useState(false)
+
+  
   const [flightPath, setFlightPath] = useState<Array<{x: number, y: number}>>([])
   const [gridPoints, setGridPoints] = useState<GridPoint[]>([])
   const [showGrid, setShowGrid] = useState(true)
