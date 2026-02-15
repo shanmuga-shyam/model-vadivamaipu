@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, JSON
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from core.database import Base
@@ -28,3 +28,17 @@ class ModelResult(Base):
 
     user = relationship("User", back_populates="results")
     dataset = relationship("Dataset", back_populates="results")
+
+
+class AnalysisHistory(Base):
+    __tablename__ = "analysis_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    dataset_id = Column(Integer, ForeignKey("datasets.id"), nullable=True)
+    payload = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # relationships are optional for quick reads
+    user = relationship("User", back_populates="results", foreign_keys=[user_id])
+    dataset = relationship("Dataset", foreign_keys=[dataset_id])
